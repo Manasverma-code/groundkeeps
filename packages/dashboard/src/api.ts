@@ -1,13 +1,12 @@
-const API_BASE = '/api';
-
+// API is served at same origin (Vite proxy in dev, proxy serves dashboard in prod)
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(path, {
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     ...options,
   });
   if (!res.ok) {
-    const err = await res.text().catch(() => 'Unknown error');
-    throw new Error(`${res.status}: ${err}`);
+    const text = await res.text().catch(() => 'Unknown error');
+    throw new Error(`${res.status}: ${text.slice(0, 200)}`);
   }
   return res.json() as Promise<T>;
 }
@@ -38,7 +37,7 @@ export interface Policy {
 }
 
 export const api = {
-  health: () => request<{ status: string }>('/health'),
+  health: () => request<{ status: string; engines: Record<string, string> }>('/health'),
 
   getAuditLog: (params?: { agent_id?: string; action?: string; limit?: number; offset?: number }) => {
     const qs = new URLSearchParams();
@@ -57,25 +56,23 @@ export const api = {
     return request<{ count: number }>(`/v1/audit/count${query ? `?${query}` : ''}`);
   },
 
+  getChainVerify: () => request<{ valid: boolean }>('/v1/audit/chain/verify'),
+
   getAgents: () => request<Agent[]>('/v1/agents'),
   createAgent: (name: string, scope: string) =>
     request<{ agent_id: string; client_secret: string; token: string }>('/v1/agents', {
-      method: 'POST',
-      body: JSON.stringify({ name, scope }),
+      method: 'POST', body: JSON.stringify({ name, scope }),
     }),
-  deleteAgent: (id: string) =>
-    request<void>(`/v1/agents/${id}`, { method: 'DELETE' }),
+  deleteAgent: (id: string) => fetch(`/v1/agents/${id}`, { method: 'DELETE' }),
 
   getPolicies: () => request<Policy[]>('/v1/policies'),
   setPolicy: (policy: Policy) =>
     request<{ status: string }>('/v1/policies', {
-      method: 'POST',
-      body: JSON.stringify(policy),
+      method: 'POST', body: JSON.stringify(policy),
     }),
 
   evaluate: (action: string, resource: string, agentId: string) =>
     request<{ allowed: boolean; reason: string }>('/v1/evaluate', {
-      method: 'POST',
-      body: JSON.stringify({ action, resource, agent_id: agentId }),
+      method: 'POST', body: JSON.stringify({ action, resource, agent_id: agentId }),
     }),
 };
