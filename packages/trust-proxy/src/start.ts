@@ -5,6 +5,9 @@ import { AuditStore } from '@trust-layer/audit-store';
 import { createApp } from './app.js';
 
 export async function startProxy() {
+  if (!process.env['TARGET_LLM_PROVIDER']) process.env['TARGET_LLM_PROVIDER'] = 'ollama';
+  if (!process.env['VERIFIER_LLM_PROVIDER']) process.env['VERIFIER_LLM_PROVIDER'] = 'ollama';
+
   const targetConfig = providerFromEnv('TARGET_LLM');
   const targetProvider = createProvider(targetConfig);
 

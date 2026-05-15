@@ -1,10 +1,10 @@
 import Fastify from 'fastify';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import type { LLMProvider, ChatRequest, LLMMessage } from '@trust-layer/providers';
 import type { AuditStore } from '@trust-layer/audit-store';
 import type { GroundingEngine } from '@trust-layer/grounding-engine';
 import type { GuardEngine } from '@trust-layer/guard-engine';
-import type { SourceDocument, PolicyEvaluation } from '@trust-layer/shared';
+import type { SourceDocument, PolicyEvaluation, Policy, PolicyRule } from '@trust-layer/shared';
 
 interface ProxyConfig {
   targetProvider: LLMProvider;
@@ -258,6 +258,98 @@ export async function createApp(config: ProxyConfig) {
           }
         : undefined,
     };
+  });
+
+  // ── Agent Management ───────────────────────────────
+
+  app.post<{ Body: { name: string; scope: string } }>('/v1/agents', async (req, reply) => {
+    if (!config.guardEngine) return reply.code(501).send({ error: 'Guard engine not configured' });
+    const creds = config.guardEngine.registerAgent(req.body.name, req.body.scope);
+    return reply.code(201).send(creds);
+  });
+
+  app.get('/v1/agents', async () => {
+    if (!config.guardEngine) return [];
+    return config.guardEngine.listAgents();
+  });
+
+  app.get<{ Params: { id: string } }>('/v1/agents/:id', async (req, reply) => {
+    if (!config.guardEngine) return reply.code(501).send({ error: 'Guard engine not configured' });
+    const agent = config.guardEngine.getAgent(req.params.id);
+    if (!agent) return reply.code(404).send({ error: 'Agent not found' });
+    return agent;
+  });
+
+  app.delete<{ Params: { id: string } }>('/v1/agents/:id', async (req, reply) => {
+    if (!config.guardEngine) return reply.code(501).send({ error: 'Guard engine not configured' });
+    const revoked = config.guardEngine.revokeAgent(req.params.id);
+    if (!revoked) return reply.code(404).send({ error: 'Agent not found' });
+    return reply.code(204).send();
+  });
+
+  // ── Policy Management ──────────────────────────────
+
+  app.post<{ Body: Record<string, unknown> }>('/v1/policies', async (req, reply) => {
+    if (!config.guardEngine) return reply.code(501).send({ error: 'Guard engine not configured' });
+    config.guardEngine.setPolicy(req.body as unknown as Policy);
+    return reply.code(201).send({ status: 'Policy set' });
+  });
+
+  app.get('/v1/policies', async () => {
+    if (!config.guardEngine) return [];
+    return config.guardEngine.listPolicies();
+  });
+
+  // ── Action Evaluation ──────────────────────────────
+
+  app.post<{ Body: { action: string; resource: string; agent_id: string } }>('/v1/evaluate', async (req) => {
+    if (!config.guardEngine) return { allowed: true, reason: 'Guard engine not configured' };
+    return config.guardEngine.evaluate(req.body.action, req.body.resource, req.body.agent_id);
+  });
+
+  app.post<{ Body: { token: string; action: string; resource: string } }>('/v1/verify-action', async (req) => {
+    if (!config.guardEngine) return { allowed: true, evaluation: { allowed: true, reason: 'No guard engine' } };
+    return config.guardEngine.verifyAction(req.body.token, req.body.action, req.body.resource);
+  });
+
+  // ── Audit Log ──────────────────────────────────────
+
+  app.post('/v1/audit', async (req, reply) => {
+    if (!config.auditStore) return reply.code(501).send({ error: 'Audit store not configured' });
+    const body = req.body as { agent_id: string; action: string; resource: string; policy_eval: PolicyEvaluation; payload_hash: string };
+    return reply.code(201).send(config.auditStore.append(body));
+  });
+
+  app.get('/v1/audit', async (req) => {
+    if (!config.auditStore) return [];
+    const query = req.query as { agent_id?: string; action?: string; resource?: string; since?: string; until?: string; limit?: string; offset?: string };
+    return config.auditStore.query({
+      agent_id: query.agent_id,
+      action: query.action,
+      resource: query.resource,
+      since: query.since,
+      until: query.until,
+      limit: query.limit ? parseInt(query.limit, 10) : undefined,
+      offset: query.offset ? parseInt(query.offset, 10) : undefined,
+    });
+  });
+
+  app.get('/v1/audit/count', async (req) => {
+    if (!config.auditStore) return { count: 0 };
+    const query = req.query as { agent_id?: string; action?: string; resource?: string };
+    return { count: config.auditStore.count(query) };
+  });
+
+  app.get('/v1/audit/chain/verify', async () => {
+    if (!config.auditStore) return { valid: true, firstEntry: null, lastEntry: null, brokenAt: null };
+    return config.auditStore.verifyChain();
+  });
+
+  app.get<{ Params: { id: string } }>('/v1/audit/:id', async (req, reply) => {
+    if (!config.auditStore) return reply.code(501).send({ error: 'Audit store not configured' });
+    const entry = config.auditStore.getByAuditId(req.params.id);
+    if (!entry) return reply.code(404).send({ error: 'Audit entry not found' });
+    return entry;
   });
 
   return app;
