@@ -1,0 +1,21 @@
+# Ground-Keeps Production — Caddy configuration
+# Auto-provisions HTTPS via Let's Encrypt
+# Replace YOUR_DOMAIN with your actual domain
+
+{$DOMAIN}:443 {
+    tls {$EMAIL}
+    
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    reverse_proxy trust-proxy:3000
+}
+
+{$DOMAIN}:80 {
+    redir https://{$DOMAIN}{uri}
+}
