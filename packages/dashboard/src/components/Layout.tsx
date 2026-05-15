@@ -5,7 +5,7 @@ export function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="layout">
       <nav className="sidebar">
-        <h2>Trust Layer</h2>
+        <h2>Ground-Keeps</h2>
         <NavLink to="/" end>Overview</NavLink>
         <NavLink to="/audit">Audit Log</NavLink>
         <NavLink to="/agents">Agents</NavLink>
