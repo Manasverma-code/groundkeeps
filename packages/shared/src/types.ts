@@ -48,6 +48,7 @@ export interface SourceDocument {
   url?: string;
   timestamp?: string;
   authority_score?: number;
+  relevance_score?: number;
 }
 
 export interface Claim {
@@ -67,12 +68,22 @@ export interface KnowledgeConflict {
 export interface GroundingRequest {
   response: string;
   sources: SourceDocument[];
+  freshness_threshold_days?: number;
+}
+
+export interface SourceRankingEntry {
+  source: SourceDocument;
+  composite_score: number;
+  freshness_score: number;
+  authority_score: number;
+  relevance_score: number;
+  is_stale: boolean;
 }
 
 export interface GroundingResult {
   hallucination_score: number;
   claims: Claim[];
-  ranked_sources: SourceDocument[];
+  ranked_sources: SourceRankingEntry[];
   conflicts: KnowledgeConflict[];
 }
 
@@ -87,6 +98,7 @@ export interface AuditEntry {
   policy_eval: PolicyEvaluation;
   payload_hash: string;
   prev_hash: string;
+  hash: string;
 }
 
 // ── Verification ───────────────────────────────────────
