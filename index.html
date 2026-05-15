@@ -3,130 +3,228 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ground-Keeps — AI That You Can Trust</title>
+  <title>Ground-Keeps — Trust Layer for Enterprise AI</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0a0a1a;
-      color: #e0e0f0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #faf8f5;
+      color: #2c2c2e;
       line-height: 1.6;
     }
-    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Header ────────────────────────────────── */
     header {
-      padding: 48px 0 24px;
-      border-bottom: 1px solid #1a1a3e;
+      padding: 24px 0;
       display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid #eeeae5;
     }
-    header h1 { font-size: 20px; color: #fff; }
-    header h1 span { color: #6366f1; }
-    header nav a { color: #8899bb; margin-left: 20px; text-decoration: none; font-size: 14px; }
-    header nav a:hover { color: #fff; }
+    header h1 { font-size: 18px; font-weight: 700; color: #8b6f4e; letter-spacing: -0.3px; }
+    header nav a {
+      color: #8a8a8e; margin-left: 24px; text-decoration: none; font-size: 14px; font-weight: 500;
+    }
+    header nav a:hover { color: #5c3d2e; }
+
+    /* ── Hero ──────────────────────────────────── */
     .hero {
-      padding: 80px 0 60px;
+      padding: 100px 0 80px;
       text-align: center;
     }
-    .hero h2 { font-size: 48px; font-weight: 800; color: #fff; margin-bottom: 16px; letter-spacing: -1px; }
-    .hero h2 span { background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero p { font-size: 18px; color: #8899bb; max-width: 600px; margin: 0 auto 32px; }
-    .hero .code { background: #12122a; border: 1px solid #1a1a3e; border-radius: 8px; padding: 16px 20px; text-align: left; font-family: monospace; font-size: 13px; color: #a5b4fc; margin-bottom: 24px; display: inline-block; }
-    .hero .code span { color: #34d399; }
-    .btn { display: inline-block; background: #6366f1; color: #fff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px; margin: 4px; }
-    .btn:hover { background: #4f46e5; }
-    .btn-outline { background: transparent; border: 1px solid #6366f1; }
-    .btn-outline:hover { background: #1a1a3e; }
-    .features { padding: 60px 0; border-top: 1px solid #1a1a3e; }
-    .features h3 { font-size: 24px; color: #fff; text-align: center; margin-bottom: 48px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
-    .card { background: #12122a; border: 1px solid #1a1a3e; border-radius: 12px; padding: 28px; }
-    .card h4 { font-size: 16px; color: #fff; margin-bottom: 8px; }
-    .card p { font-size: 14px; color: #8899bb; }
-    .card .icon { font-size: 28px; margin-bottom: 12px; display: block; }
-    .metrics { padding: 60px 0; border-top: 1px solid #1a1a3e; text-align: center; }
-    .metrics h3 { font-size: 24px; color: #fff; margin-bottom: 40px; }
-    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 24px; }
-    .metric { background: #12122a; border: 1px solid #1a1a3e; border-radius: 8px; padding: 24px; }
-    .metric .value { font-size: 32px; font-weight: 700; color: #6366f1; }
-    .metric .value.green { color: #34d399; }
-    .metric .label { font-size: 13px; color: #8899bb; margin-top: 4px; }
-    footer { padding: 40px 0; border-top: 1px solid #1a1a3e; text-align: center; font-size: 13px; color: #556; }
+    .hero h2 {
+      font-size: 52px; font-weight: 800; color: #1a1a1c; margin-bottom: 20px;
+      letter-spacing: -1.5px; line-height: 1.15;
+    }
+    .hero h2 span { color: #8b6f4e; }
+    .hero p {
+      font-size: 18px; color: #6a6a6e; max-width: 600px; margin: 0 auto 40px;
+    }
+    .hero .code-block {
+      background: #ffffff; border: 1px solid #ede8e3; border-radius: 12px;
+      padding: 20px 24px; text-align: left; font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; color: #6b5a4a; max-width: 520px; margin: 0 auto 36px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04); line-height: 1.8;
+    }
+    .hero .code-block .prompt { color: #b8b8be; }
+    .hero .code-block .output { color: #7a9e7e; }
+    .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-block; background: #8b6f4e; color: #fff;
+      padding: 14px 32px; border-radius: 10px; text-decoration: none;
+      font-weight: 600; font-size: 15px; transition: background 0.15s;
+    }
+    .btn:hover { background: #7a5f42; }
+    .btn-outline {
+      background: transparent; border: 1px solid #d4cdc6; color: #4a4a4e;
+    }
+    .btn-outline:hover { background: #f8f6f3; border-color: #c4a882; }
+
+    /* ── Logos ─────────────────────────────────── */
+    .logos { padding: 40px 0 60px; text-align: center; border-top: 1px solid #eeeae5; }
+    .logos p { font-size: 12px; color: #b8b8be; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+    .logo-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+    .logo-grid span { font-size: 14px; color: #8a8a8e; font-weight: 500; }
+
+    /* ── Features ──────────────────────────────── */
+    .features { padding: 80px 0; }
+    .features h3 { font-size: 28px; color: #1a1a1c; text-align: center; margin-bottom: 16px; letter-spacing: -0.5px; }
+    .features > .container > p { text-align: center; color: #6a6a6e; margin-bottom: 48px; font-size: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .card {
+      background: #ffffff; border: 1px solid #ede8e3; border-radius: 12px;
+      padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: box-shadow 0.2s;
+    }
+    .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .card .icon { font-size: 24px; margin-bottom: 12px; display: block; }
+    .card h4 { font-size: 16px; color: #1a1a1c; margin-bottom: 8px; }
+    .card p { font-size: 14px; color: #6a6a6e; line-height: 1.7; }
+
+    /* ── Architecture ──────────────────────────── */
+    .arch { padding: 60px 0; border-top: 1px solid #eeeae5; }
+    .arch h3 { font-size: 28px; color: #1a1a1c; text-align: center; margin-bottom: 40px; letter-spacing: -0.5px; }
+    .arch .flow { max-width: 600px; margin: 0 auto; }
+    .arch .flow pre {
+      background: #ffffff; border: 1px solid #ede8e3; border-radius: 12px;
+      padding: 24px; font-size: 13px; line-height: 2; color: #6b5a4a;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04); overflow-x: auto;
+    }
+    .arch .flow pre .hl { color: #8b6f4e; font-weight: 600; }
+    .arch .flow pre .arrow { color: #c4a882; }
+
+    /* ── CTA ───────────────────────────────────── */
+    .cta {
+      padding: 80px 0; text-align: center;
+      background: #ffffff; border-top: 1px solid #eeeae5;
+    }
+    .cta h3 { font-size: 28px; color: #1a1a1c; margin-bottom: 12px; letter-spacing: -0.5px; }
+    .cta p { color: #6a6a6e; margin-bottom: 28px; }
+
+    /* ── Footer ────────────────────────────────── */
+    footer { padding: 32px 0; text-align: center; font-size: 13px; color: #b8b8be; }
+
+    @media (max-width: 640px) {
+      .hero h2 { font-size: 32px; }
+      header nav a { margin-left: 16px; font-size: 13px; }
+      .hero { padding: 60px 0 40px; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1><span>Ground</span>-Keeps</h1>
+      <h1>Ground-Keeps</h1>
       <nav>
+        <a href="#features">Features</a>
         <a href="https://github.com/Manasverma-code/Ground-Keeps">GitHub</a>
         <a href="docs/INTEGRATION.md">Docs</a>
       </nav>
     </header>
+  </div>
 
-    <section class="hero">
+  <section class="hero">
+    <div class="container">
       <h2>AI That You Can <span>Trust</span></h2>
-      <p>Middleware that verifies every LLM output against real data and ensures every agent action stays within policy.</p>
-      <div class="code">
-        <span>$</span> docker compose up --build<br>
-        <span>$</span> curl http://localhost:3000/health<br>
-        <span>→</span> {"status":"ok","service":"trust-proxy"}
+      <p>Open-source middleware that verifies every LLM output against real data and ensures every agent action stays within policy.</p>
+      <div class="code-block">
+        <span class="prompt">$</span> docker compose up --build<br>
+        <span class="prompt">$</span> curl http://localhost:3000/health<br>
+        <span class="output">→ {"status":"ok","service":"trust-proxy"}</span>
       </div>
-      <div>
+      <div class="btn-group">
         <a class="btn" href="docs/INTEGRATION.md">Get Started →</a>
         <a class="btn btn-outline" href="https://github.com/Manasverma-code/Ground-Keeps">View on GitHub</a>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="features">
+  <section class="logos">
+    <div class="container">
+      <p>Works With</p>
+      <div class="logo-grid">
+        <span>OpenAI</span>
+        <span>Anthropic</span>
+        <span>Google Gemini</span>
+        <span>Groq</span>
+        <span>Ollama</span>
+        <span>DeepSeek</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="container">
       <h3>Two Engines, One API</h3>
+      <p>Drop-in middleware for any LLM application. Five-minute integration.</p>
       <div class="grid">
         <div class="card">
           <span class="icon">🔍</span>
           <h4>Grounding Engine</h4>
-          <p>Real-time hallucination detection using reasoning-based verification. Extracts claims, checks against sources, ranks by freshness and authority.</p>
+          <p>Real-time hallucination detection using reasoning-based verification — not embeddings. Extracts claims, cross-references sources, ranks by freshness and authority.</p>
         </div>
         <div class="card">
           <span class="icon">🛡️</span>
           <h4>Guard Engine</h4>
-          <p>Agent identity with JWT tokens. Declarative allow/deny policies with glob patterns. Real-time action verification before execution.</p>
+          <p>JWT-based agent identity with scoped credentials. Declarative allow/deny policies using glob patterns. Real-time action verification before execution.</p>
         </div>
         <div class="card">
           <span class="icon">📋</span>
           <h4>Audit Store</h4>
-          <p>Append-only WAL-based log with SHA-256 hash chains. Detect tampering instantly. Full compliance reporting (EU AI Act, HIPAA, SOC 2).</p>
+          <p>Append-only WAL-based log with SHA-256 hash chain verification. Detect tampering instantly. Built for EU AI Act, HIPAA, and SOC 2 compliance.</p>
+        </div>
+        <div class="card">
+          <span class="icon">📊</span>
+          <h4>React Dashboard</h4>
+          <p>Real-time metrics, searchable audit log, agent and policy management. Monitor hallucination rates, blocked actions, and compliance status.</p>
         </div>
         <div class="card">
           <span class="icon">🔌</span>
-          <h4>Any LLM Provider</h4>
-          <p>Swap between OpenAI, Anthropic, Gemini, Groq, Ollama, and more via env vars. Zero code changes. Works with local or cloud models.</p>
+          <h4>Provider Agnostic</h4>
+          <p>Swap between OpenAI, Anthropic, Gemini, Groq, Ollama, and more via environment variables. Zero code changes. Supports cloud and local models.</p>
+        </div>
+        <div class="card">
+          <span class="icon">🐳</span>
+          <h4>One-Command Deploy</h4>
+          <p>Docker Compose starts the entire stack in seconds. PowerShell and Bash launch scripts with automatic demo data seeding.</p>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="metrics">
-      <h3>Performance Targets</h3>
-      <div class="metric-grid">
-        <div class="metric">
-          <div class="value">5%</div>
-          <div class="label">Hallucination FPR (vs 100% for embeddings)</div>
-        </div>
-        <div class="metric">
-          <div class="value green">95%</div>
-          <div class="label">Conflict resolution accuracy</div>
-        </div>
-        <div class="metric">
-          <div class="value green">200ms</div>
-          <div class="label">Action verification latency</div>
-        </div>
-        <div class="metric">
-          <div class="value green">1%</div>
-          <div class="label">False positive rate on policy blocks</div>
-        </div>
+  <section class="arch">
+    <div class="container">
+      <h3>Architecture</h3>
+      <div class="flow">
+        <pre>
+<span class="hl">Your App</span> → <span class="hl">Trust Proxy</span> → <span class="hl">LLM Provider</span>
+                │
+           ┌────┴────┐
+        <span class="hl">Grounding</span>   <span class="hl">Guard</span>
+        <span class="hl">Engine</span>     <span class="hl">Engine</span>
+           └────┬────┘
+             <span class="hl">Audit Store</span>
+
+  <span class="arrow">→</span> Claim extraction     <span class="arrow">→</span> JWT agent identity
+  <span class="arrow">→</span> Source verification   <span class="arrow">→</span> Allow/deny policies
+  <span class="arrow">→</span> Conflict resolution   <span class="arrow">→</span> Real-time evaluation
+  <span class="arrow">→</span> Temporal checks      <span class="arrow">→</span> SHA-256 audit chain</pre>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <footer>
-      <p>Ground-Keeps — Private beta. Built for regulated enterprises.</p>
-    </footer>
-  </div>
+  <section class="cta">
+    <div class="container">
+      <h3>Ready to deploy?</h3>
+      <p>Open-source. MIT-licensed. Runs anywhere Docker does.</p>
+      <div class="btn-group">
+        <a class="btn" href="docs/INTEGRATION.md">Read the Docs →</a>
+        <a class="btn btn-outline" href="https://github.com/Manasverma-code/Ground-Keeps">Star on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Ground-Keeps — Open-source trust layer for enterprise AI.</p>
+  </footer>
 </body>
 </html>
