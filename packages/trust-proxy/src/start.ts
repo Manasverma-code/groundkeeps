@@ -3,7 +3,11 @@ import { GroundingEngine } from '@trust-layer/grounding-engine';
 import { GuardEngine } from '@trust-layer/guard-engine';
 import { AuditStore } from '@trust-layer/audit-store';
 import { existsSync, mkdirSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createApp } from './app.js';
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 export async function startProxy() {
   // Default to ollama if no provider configured
@@ -29,7 +33,7 @@ export async function startProxy() {
   const auditStore = await AuditStore.create(auditPath ?? ':memory:');
 
   // Serve dashboard if built files exist
-  const dashboardDir = existsSync('./packages/dashboard/dist') ? './packages/dashboard/dist' : undefined;
+  const dashboardDir = existsSync(resolve(__dirname, '../../dashboard/dist')) ? resolve(__dirname, '../../dashboard/dist') : undefined;
 
   const app = await createApp({
     targetProvider,
