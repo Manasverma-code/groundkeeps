@@ -1,0 +1,314 @@
+openapi: 3.0.3
+info:
+  title: Trust Layer API
+  description: Middleware layer for LLM grounding and governance
+  version: 0.1.0
+  contact:
+    name: Trust Layer Team
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # ── Agent ──────────────────────────────────────────
+    AgentRegistration:
+      type: object
+      required: [name, scope]
+      properties:
+        name:
+          type: string
+          description: Human-readable agent name
+        scope:
+          type: string
+          description: Permission scope string (e.g. "hr-bot:read")
+    AgentCredentials:
+      type: object
+      properties:
+        agent_id:
+          type: string
+          format: uuid
+        client_secret:
+          type: string
+        token:
+          type: string
+    AgentInfo:
+      type: object
+      properties:
+        agent_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        scope:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    # ── Policy ─────────────────────────────────────────
+    PolicyRule:
+      type: object
+      required: [action, resource]
+      properties:
+        action:
+          type: string
+          enum: [read, write, delete, execute]
+        resource:
+          type: string
+          description: Resource pattern, supports glob (*)
+    Policy:
+      type: object
+      required: [agent, allow]
+      properties:
+        agent:
+          type: string
+          description: Agent name or pattern
+        allow:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicyRule'
+        deny:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicyRule'
+    PolicyEvaluation:
+      type: object
+      properties:
+        allowed:
+          type: boolean
+        reason:
+          type: string
+        matched_rule:
+          type: string
+
+    # ── Grounding ──────────────────────────────────────
+    Claim:
+      type: object
+      properties:
+        text:
+          type: string
+        supported:
+          type: boolean
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        source:
+          type: string
+        reason:
+          type: string
+    SourceDocument:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        url:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        authority_score:
+          type: number
+    GroundingRequest:
+      type: object
+      required: [response, sources]
+      properties:
+        response:
+          type: string
+          description: LLM-generated response text
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceDocument'
+    GroundingResult:
+      type: object
+      properties:
+        hallucination_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        claims:
+          type: array
+          items:
+            $ref: '#/components/schemas/Claim'
+        ranked_sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceDocument'
+        conflicts:
+          type: array
+          items:
+            type: object
+            properties:
+              claim:
+                type: string
+              sources:
+                type: array
+                items:
+                  type: string
+              resolution:
+                type: string
+
+    # ── Audit ──────────────────────────────────────────
+    AuditEntry:
+      type: object
+      properties:
+        audit_id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+        agent_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+        resource:
+          type: string
+        policy_eval:
+          $ref: '#/components/schemas/PolicyEvaluation'
+        payload_hash:
+          type: string
+        prev_hash:
+          type: string
+
+    # ── Verification ───────────────────────────────────
+    VerifyRequest:
+      type: object
+      required: [response, sources, action, resource]
+      properties:
+        agent_id:
+          type: string
+          format: uuid
+          description: Agent identifier for guard evaluation
+        response:
+          type: string
+          description: LLM response text
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceDocument'
+        action:
+          type: string
+          description: Intended action (read, write, delete, execute)
+        resource:
+          type: string
+          description: Target resource path
+    VerifyResponse:
+      type: object
+      properties:
+        verified:
+          type: boolean
+        grounding:
+          $ref: '#/components/schemas/GroundingResult'
+        guard:
+          $ref: '#/components/schemas/PolicyEvaluation'
+        audit_id:
+          type: string
+          format: uuid
+
+paths:
+  /v1/agents:
+    post:
+      tags: [Agents]
+      summary: Register a new agent
+      operationId: createAgent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentRegistration'
+      responses:
+        '201':
+          description: Agent created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentCredentials'
+
+  /v1/verify:
+    post:
+      tags: [Verification]
+      summary: Full verification (grounding + guard)
+      operationId: verify
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyRequest'
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyResponse'
+
+  /v1/ground:
+    post:
+      tags: [Grounding]
+      summary: Grounding-only verification
+      operationId: ground
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroundingRequest'
+      responses:
+        '200':
+          description: Grounding result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroundingResult'
+
+  /v1/audit:
+    get:
+      tags: [Audit]
+      summary: Query audit log
+      operationId: getAuditLog
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: agent_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Audit log entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditEntry'
