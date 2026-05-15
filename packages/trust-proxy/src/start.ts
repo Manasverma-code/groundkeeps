@@ -35,6 +35,8 @@ export async function startProxy() {
   // Serve dashboard if built files exist
   const dashboardDir = existsSync(resolve(__dirname, '../../dashboard/dist')) ? resolve(__dirname, '../../dashboard/dist') : undefined;
 
+  const apiKey = process.env['PROXY_API_KEY'];
+
   const app = await createApp({
     targetProvider,
     groundingEngine,
@@ -42,6 +44,7 @@ export async function startProxy() {
     auditStore,
     defaultAgentId: process.env['DEFAULT_AGENT_ID'] ?? 'default',
     dashboardDir,
+    apiKey,
   });
 
   const port = parseInt(process.env['PROXY_PORT'] ?? '3000', 10);
@@ -50,7 +53,9 @@ export async function startProxy() {
   console.log(`  📡 Target LLM:   ${targetConfig.name} (${targetConfig.defaultModel})`);
   console.log(`  🔍 Verifier LLM: ${verifierConfig.name} (${verifierConfig.defaultModel})`);
   console.log(`  🛡️  Guard Engine: enabled`);
+  console.log(`  🔑 API Auth:     ${apiKey ? 'required (Authorization: Bearer <key>)' : 'disabled'}`);
   console.log(`  📋 Audit Store:  ${auditPath ?? 'in-memory'}`);
+  console.log(`  ⚡ Rate Limit:   100 req/min per client`);
   if (dashboardDir) console.log(`  📊 Dashboard:    http://localhost:${port}`);
   console.log(``);
   return app;
