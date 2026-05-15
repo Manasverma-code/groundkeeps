@@ -22,7 +22,7 @@
     "@trust-layer/shared": "*"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
+    "@types/node": "^25.8.0",
     "typescript": "^5.8.0"
   }
 }
