@@ -1,5 +1,5 @@
 import { createProvider, providerFromEnv } from '@trust-layer/providers';
-import { GroundingEngine } from '@trust-layer/grounding-engine';
+import { GroundingEngine, DocumentGovernanceEngine, OutputGovernanceEngine, EscalationEngine } from '@trust-layer/grounding-engine';
 import { GuardEngine } from '@trust-layer/guard-engine';
 import { AuditStore } from '@trust-layer/audit-store';
 import { existsSync, mkdirSync } from 'node:fs';
@@ -28,6 +28,10 @@ export async function startProxy() {
   const verifierProvider = createProvider(verifierConfig);
   const groundingEngine = new GroundingEngine(verifierProvider);
 
+  const documentGovernanceEngine = new DocumentGovernanceEngine();
+  const outputGovernanceEngine = new OutputGovernanceEngine();
+  const escalationEngine = new EscalationEngine(verifierProvider);
+
   const guardEngine = new GuardEngine();
 
   const auditStore = await AuditStore.create(auditPath ?? ':memory:');
@@ -40,6 +44,9 @@ export async function startProxy() {
   const app = await createApp({
     targetProvider,
     groundingEngine,
+    documentGovernanceEngine,
+    outputGovernanceEngine,
+    escalationEngine,
     guardEngine,
     auditStore,
     defaultAgentId: process.env['DEFAULT_AGENT_ID'] ?? 'default',

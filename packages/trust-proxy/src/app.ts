@@ -2,9 +2,9 @@ import Fastify, { type FastifyRequest, type FastifyReply } from 'fastify';
 import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { LLMProvider, ChatRequest, LLMMessage } from '@trust-layer/providers';
 import type { AuditStore } from '@trust-layer/audit-store';
-import type { GroundingEngine } from '@trust-layer/grounding-engine';
+import type { GroundingEngine, DocumentGovernanceEngine, OutputGovernanceEngine, EscalationEngine } from '@trust-layer/grounding-engine';
 import type { GuardEngine } from '@trust-layer/guard-engine';
-import type { SourceDocument, PolicyEvaluation, Policy } from '@trust-layer/shared';
+import type { SourceDocument, PolicyEvaluation, Policy, DocumentGovernanceConfig, DocumentGovernanceResult, OutputGovernanceConfig, OutputGovernanceResult, EscalationConfig, EscalationResult, GroundingResult } from '@trust-layer/shared';
 import fastifyCors from '@fastify/cors';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyStatic from '@fastify/static';
@@ -13,6 +13,9 @@ import { existsSync } from 'node:fs';
 interface ProxyConfig {
   targetProvider: LLMProvider;
   groundingEngine?: GroundingEngine;
+  documentGovernanceEngine?: DocumentGovernanceEngine;
+  outputGovernanceEngine?: OutputGovernanceEngine;
+  escalationEngine?: EscalationEngine;
   guardEngine?: GuardEngine;
   auditStore?: AuditStore;
   defaultAgentId?: string;
@@ -78,6 +81,8 @@ export async function createApp(config: ProxyConfig) {
     auth: config.apiKey ? 'required' : 'disabled',
     engines: {
       grounding: config.groundingEngine ? 'enabled' : 'disabled',
+      output_governance: config.outputGovernanceEngine ? 'enabled' : 'disabled',
+      escalation: config.escalationEngine ? 'enabled' : 'disabled',
       guard: config.guardEngine ? 'enabled' : 'disabled',
       audit: config.auditStore ? 'enabled' : 'disabled',
     },
@@ -118,11 +123,51 @@ export async function createApp(config: ProxyConfig) {
 
   // ── Verify ───────────────────────────────────────
   app.post<{
-    Body: { response: string; sources: SourceDocument[]; action: string; resource: string; agent_token?: string; agent_id?: string };
+    Body: { response: string; sources: SourceDocument[]; action: string; resource: string; agent_token?: string; agent_id?: string; governance?: DocumentGovernanceConfig; output_governance?: OutputGovernanceConfig; escalation?: EscalationConfig };
   }>('/v1/verify', async (req, reply) => {
-    const { response, sources, action, resource, agent_token, agent_id } = req.body;
+    const { response, sources, action, resource, agent_token, agent_id, governance, output_governance, escalation } = req.body;
     if (!response) return reply.code(400).send({ error: 'response required' });
 
+    // 1. Document governance (pre-filter sources)
+    let governanceResult: DocumentGovernanceResult | null = null;
+    let filteredSources = sources;
+    if (config.documentGovernanceEngine && governance?.rules?.length && sources?.length) {
+      governanceResult = config.documentGovernanceEngine.filter(sources, governance);
+      filteredSources = governanceResult.filtered_sources;
+    }
+
+    // 2. Output governance (citation check + content safety)
+    let outputGovernanceResult: OutputGovernanceResult | null = null;
+    if (config.outputGovernanceEngine && output_governance && sources?.length) {
+      outputGovernanceResult = config.outputGovernanceEngine.checkResponse(response, filteredSources, output_governance);
+    }
+
+    // 3. Grounding engine (hallucination detection)
+    let groundingResult: GroundingResult | null = null;
+    if (config.groundingEngine && filteredSources?.length) {
+      try { groundingResult = await config.groundingEngine.verify({ response, sources: filteredSources }); } catch {
+        groundingResult = null;
+      }
+    }
+
+    // 4. Escalation (decide pass/correct/block based on all results)
+    let escalationResult: EscalationResult | null = null;
+    let finalResponse = response;
+    if (config.escalationEngine && escalation?.rules?.length) {
+      escalationResult = config.escalationEngine.evaluate(groundingResult, outputGovernanceResult, escalation);
+      if (escalationResult.action === 'correct' && groundingResult) {
+        try {
+          finalResponse = await config.escalationEngine.correctResponse(response, groundingResult, filteredSources);
+        } catch {
+          escalationResult = { action: 'flag', message: 'Correction failed, flagged for review', triggered_by: 'correct_error' };
+        }
+      }
+      if (escalationResult.action === 'block') {
+        return { verified: false, response: finalResponse, grounding: groundingResult, guard: { allowed: true, reason: 'Blocked by escalation' }, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, audit_id: null };
+      }
+    }
+
+    // 5. Guard engine (agent action check)
     let guardEval: PolicyEvaluation = { allowed: true, reason: 'No guard engine configured' };
     let resolvedAgentId = agent_id ?? config.defaultAgentId ?? 'unknown';
 
@@ -133,44 +178,78 @@ export async function createApp(config: ProxyConfig) {
         if (result.agentId) resolvedAgentId = result.agentId;
         if (!result.allowed) { config.auditStore?.append({
           agent_id: resolvedAgentId, action: `${action}:blocked`, resource,
-          policy_eval: guardEval, payload_hash: createHash('sha256').update(JSON.stringify({ response })).digest('hex'),
-        }); return reply.code(403).send({ verified: false, grounding: null, guard: guardEval, error: 'Action blocked by guard policy' }); }
+          policy_eval: guardEval, payload_hash: createHash('sha256').update(JSON.stringify({ response, governanceResult, outputGovernanceResult, escalationResult })).digest('hex'),
+        }); return reply.code(403).send({ verified: false, grounding: groundingResult, guard: guardEval, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, error: 'Action blocked by guard policy' }); }
       } else if (agent_id) {
         guardEval = config.guardEngine.evaluate(action, resource, agent_id);
-        if (!guardEval.allowed) return reply.code(403).send({ verified: false, grounding: null, guard: guardEval, error: 'Action blocked by guard policy' });
-      }
-    }
-
-    let groundingResult = null;
-    if (config.groundingEngine && sources?.length) {
-      try { groundingResult = await config.groundingEngine.verify({ response, sources }); } catch (err) {
-        groundingResult = { hallucination_score: 0, claims: [], ranked_sources: [], conflicts: [], error: (err as Error).message };
+        if (!guardEval.allowed) return reply.code(403).send({ verified: false, grounding: groundingResult, guard: guardEval, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, error: 'Action blocked by guard policy' });
       }
     }
 
     if (config.auditStore) {
       const entry = config.auditStore.append({
         agent_id: resolvedAgentId, action, resource, policy_eval: guardEval,
-        payload_hash: createHash('sha256').update(JSON.stringify({ response, groundingResult, guardEval })).digest('hex'),
+        payload_hash: createHash('sha256').update(JSON.stringify({ response: finalResponse, groundingResult, guardEval, governanceResult, outputGovernanceResult, escalationResult })).digest('hex'),
       });
-      return { verified: guardEval.allowed, grounding: groundingResult, guard: guardEval, audit_id: entry.audit_id };
+      return { verified: guardEval.allowed, response: finalResponse, grounding: groundingResult, guard: guardEval, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, audit_id: entry.audit_id };
     }
-    return { verified: guardEval.allowed, grounding: groundingResult, guard: guardEval, audit_id: null };
+    return { verified: guardEval.allowed, response: finalResponse, grounding: groundingResult, guard: guardEval, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, audit_id: null };
   });
 
   // ── Chat + Verify ─────────────────────────────────
   app.post<{
-    Body: { model?: string; messages: { role: string; content: string }[]; sources: SourceDocument[]; action: string; resource: string; agent_token?: string; agent_id?: string; max_tokens?: number; temperature?: number };
+    Body: { model?: string; messages: { role: string; content: string }[]; sources: SourceDocument[]; action: string; resource: string; agent_token?: string; agent_id?: string; max_tokens?: number; temperature?: number; governance?: DocumentGovernanceConfig; output_governance?: OutputGovernanceConfig; escalation?: EscalationConfig };
   }>('/v1/chat/verify', async (req, reply) => {
-    const { model, messages, sources, action, resource, agent_token, agent_id, max_tokens, temperature } = req.body;
+    const { model, messages, sources, action, resource, agent_token, agent_id, max_tokens, temperature, governance, output_governance, escalation } = req.body;
     if (!messages?.length) return reply.code(400).send({ error: 'messages required' });
 
+    // 1. Document governance (pre-filter sources)
+    let governanceResult: DocumentGovernanceResult | null = null;
+    let filteredSources = sources;
+    if (config.documentGovernanceEngine && governance?.rules?.length && sources?.length) {
+      governanceResult = config.documentGovernanceEngine.filter(sources, governance);
+      filteredSources = governanceResult.filtered_sources;
+    }
+
+    // 2. LLM call
     let llmResponse;
     try { llmResponse = await config.targetProvider.chat({
       model: model ?? (config.targetProvider.name === 'ollama' ? 'llama3.2' : 'gpt-4o-mini'),
       messages: messages as LLMMessage[], maxTokens: max_tokens, temperature: temperature,
     }); } catch (err) { return reply.code(502).send({ error: `LLM request failed: ${(err as Error).message}` }); }
 
+    // 3. Output governance (citation check + content safety)
+    let outputGovernanceResult: OutputGovernanceResult | null = null;
+    if (config.outputGovernanceEngine && output_governance && filteredSources?.length) {
+      outputGovernanceResult = config.outputGovernanceEngine.checkResponse(llmResponse.content, filteredSources, output_governance);
+    }
+
+    // 4. Grounding engine (hallucination detection)
+    let groundingResult: GroundingResult | null = null;
+    if (config.groundingEngine && filteredSources?.length) {
+      try { groundingResult = await config.groundingEngine.verify({ response: llmResponse.content, sources: filteredSources }); } catch {
+        groundingResult = null;
+      }
+    }
+
+    // 5. Escalation (decide pass/correct/block based on all results)
+    let escalationResult: EscalationResult | null = null;
+    let finalResponse = llmResponse.content;
+    if (config.escalationEngine && escalation?.rules?.length) {
+      escalationResult = config.escalationEngine.evaluate(groundingResult, outputGovernanceResult, escalation);
+      if (escalationResult.action === 'correct' && groundingResult) {
+        try {
+          finalResponse = await config.escalationEngine.correctResponse(llmResponse.content, groundingResult, filteredSources);
+        } catch {
+          escalationResult = { action: 'flag', message: 'Correction failed, flagged for review', triggered_by: 'correct_error' };
+        }
+      }
+      if (escalationResult.action === 'block') {
+        return { verified: false, response: finalResponse, grounding: groundingResult, guard: { allowed: true, reason: 'Blocked by escalation' }, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, audit_id: null };
+      }
+    }
+
+    // 6. Guard engine (agent action check)
     let guardEval: PolicyEvaluation = { allowed: true, reason: 'No guard engine configured' };
     let resolvedAgentId = agent_id ?? config.defaultAgentId ?? 'unknown';
 
@@ -179,25 +258,18 @@ export async function createApp(config: ProxyConfig) {
       else if (agent_id) { guardEval = config.guardEngine.evaluate(action, resource, agent_id); }
     }
 
-    let groundingResult = null;
-    if (config.groundingEngine && sources?.length) {
-      try { groundingResult = await config.groundingEngine.verify({ response: llmResponse.content, sources }); } catch (err) {
-        groundingResult = { hallucination_score: 0, claims: [], ranked_sources: [], conflicts: [], error: (err as Error).message };
-      }
-    }
-
     let auditId: string | null = null;
     if (config.auditStore) {
       const entry = config.auditStore.append({
         agent_id: resolvedAgentId, action: guardEval.allowed ? action : `${action}:blocked`, resource,
-        policy_eval: guardEval, payload_hash: createHash('sha256').update(JSON.stringify({ messages, response: llmResponse.content })).digest('hex'),
+        policy_eval: guardEval, payload_hash: createHash('sha256').update(JSON.stringify({ messages, response: finalResponse, governanceResult, outputGovernanceResult, escalationResult })).digest('hex'),
       }); auditId = entry.audit_id;
     }
 
-    if (!guardEval.allowed) return reply.code(403).send({ verified: false, response: llmResponse.content, grounding: groundingResult, guard: guardEval, audit_id: auditId });
+    if (!guardEval.allowed) return reply.code(403).send({ verified: false, response: finalResponse, grounding: groundingResult, guard: guardEval, audit_id: auditId, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult });
 
     return {
-      verified: true, response: llmResponse.content, grounding: groundingResult, guard: guardEval, audit_id: auditId,
+      verified: true, response: finalResponse, grounding: groundingResult, guard: guardEval, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, audit_id: auditId,
       model: llmResponse.model, provider: llmResponse.provider,
       usage: llmResponse.usage ? { prompt_tokens: llmResponse.usage.promptTokens, completion_tokens: llmResponse.usage.completionTokens, total_tokens: llmResponse.usage.totalTokens } : undefined,
     };

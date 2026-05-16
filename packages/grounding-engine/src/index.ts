@@ -6,3 +6,6 @@ export { ClaimVerifier } from './verifier.js';
 export { SourceRanker } from './source-ranker.js';
 export { ConflictResolver } from './conflict-resolver.js';
 export { TemporalChecker } from './temporal.js';
+export { DocumentGovernanceEngine } from './document-governance.js';
+export { OutputGovernanceEngine } from './output-governance.js';
+export { EscalationEngine } from './escalation.js';

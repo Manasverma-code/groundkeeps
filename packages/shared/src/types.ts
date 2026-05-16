@@ -41,6 +41,15 @@ export interface PolicyEvaluation {
 
 // ── Grounding ──────────────────────────────────────────
 
+export interface DocumentMetadata {
+  status?: 'active' | 'expired' | 'draft' | 'superseded';
+  effective_date?: string;
+  expiry_date?: string;
+  version?: number;
+  supersedes?: string[];
+  superseded_by?: string;
+}
+
 export interface SourceDocument {
   id: string;
   title: string;
@@ -49,6 +58,7 @@ export interface SourceDocument {
   timestamp?: string;
   authority_score?: number;
   relevance_score?: number;
+  metadata?: DocumentMetadata;
 }
 
 export interface Claim {
@@ -116,4 +126,85 @@ export interface VerifyResponse {
   grounding: GroundingResult;
   guard: PolicyEvaluation;
   audit_id: string;
+}
+
+// ── Document Governance ────────────────────────────────
+
+export type DocumentGovernanceRuleType =
+  | 'status_equals'
+  | 'effective_date_on_or_before'
+  | 'not_expired'
+  | 'not_superseded'
+  | 'version_gte';
+
+export interface DocumentGovernanceRule {
+  type: DocumentGovernanceRuleType;
+  value?: string | number;
+  reason?: string;
+}
+
+export interface DocumentGovernanceConfig {
+  rules: DocumentGovernanceRule[];
+}
+
+export interface DocumentGovernanceResult {
+  filtered_sources: SourceDocument[];
+  excluded: {
+    source_id: string;
+    rule: DocumentGovernanceRuleType;
+    reason: string;
+  }[];
+}
+
+// ── Output Governance ─────────────────────────────
+
+export interface CitationCheck {
+  cited_ids: string[];
+  fabricated_ids: string[];
+  valid_ids: string[];
+  citation_count: number;
+}
+
+export interface ContentSafetyViolation {
+  type: string;
+  pattern: string;
+  match: string;
+}
+
+export interface OutputGovernanceConfig {
+  check_citations?: boolean;
+  forbid_fabricated_citations?: boolean;
+  block_pii?: boolean;
+  custom_patterns?: string[];
+  min_citations?: number;
+}
+
+export interface OutputGovernanceResult {
+  passed: boolean;
+  citation_check?: CitationCheck;
+  violations: ContentSafetyViolation[];
+  reason?: string;
+}
+
+// ── Escalation ────────────────────────────────────
+
+export type EscalationAction = 'pass' | 'flag' | 'block' | 'correct';
+
+export interface EscalationRule {
+  metric: 'hallucination_score' | 'unsupported_claim_count' | 'citation_missing' | 'content_violation';
+  operator: 'gt' | 'gte' | 'lt' | 'lte' | 'eq';
+  threshold: number;
+  action: EscalationAction;
+  message?: string;
+}
+
+export interface EscalationConfig {
+  rules: EscalationRule[];
+}
+
+export interface EscalationResult {
+  action: EscalationAction;
+  triggered_by?: string;
+  corrected_response?: string;
+  message: string;
 }
