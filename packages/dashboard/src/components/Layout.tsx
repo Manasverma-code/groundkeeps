@@ -8,6 +8,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <h2>Ground-Keeps</h2>
         <NavLink to="/" end>Overview</NavLink>
         <NavLink to="/audit">Audit Log</NavLink>
+        <NavLink to="/monitor">Live Monitor</NavLink>
         <NavLink to="/agents">Agents</NavLink>
         <NavLink to="/policies">Policies</NavLink>
       </nav>

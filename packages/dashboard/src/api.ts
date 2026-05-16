@@ -30,6 +30,18 @@ export interface Agent {
   created_at: string;
 }
 
+export interface RecentVerification {
+  timestamp: string;
+  type: 'verify' | 'chat/verify';
+  verified: boolean;
+  hallucination_score: number | null;
+  governance_exclusions: number;
+  output_governance_passed: boolean | null;
+  escalation_action: string | null;
+  violations: number;
+  audit_id: string | null;
+}
+
 export interface Policy {
   agent: string;
   allow: { action: string; resource: string }[];
@@ -75,4 +87,6 @@ export const api = {
     request<{ allowed: boolean; reason: string }>('/v1/evaluate', {
       method: 'POST', body: JSON.stringify({ action, resource, agent_id: agentId }),
     }),
+
+  getRecent: () => request<RecentVerification[]>('/v1/recent'),
 };

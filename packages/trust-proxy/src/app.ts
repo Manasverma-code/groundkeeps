@@ -23,6 +23,20 @@ interface ProxyConfig {
   apiKey?: string;
 }
 
+const MAX_RECENT_VERIFICATIONS = 50;
+
+interface RecentVerification {
+  timestamp: string;
+  type: 'verify' | 'chat/verify';
+  verified: boolean;
+  hallucination_score: number | null;
+  governance_exclusions: number;
+  output_governance_passed: boolean | null;
+  escalation_action: string | null;
+  violations: number;
+  audit_id: string | null;
+}
+
 const PUBLIC_ROUTES = new Set(['/health', '/']);
 
 function authHook(config: ProxyConfig) {
@@ -45,6 +59,32 @@ function authHook(config: ProxyConfig) {
 
 export async function createApp(config: ProxyConfig) {
   const app = Fastify({ logger: true });
+
+  const recentBuffer: RecentVerification[] = [];
+  function pushRecent(entry: RecentVerification) {
+    recentBuffer.unshift(entry);
+    if (recentBuffer.length > MAX_RECENT_VERIFICATIONS) {
+      recentBuffer.length = MAX_RECENT_VERIFICATIONS;
+    }
+  }
+
+  app.addHook('preSerialization', async (_request, _reply, payload) => {
+    if (payload && typeof payload === 'object' && !Array.isArray(payload) && 'grounding' in payload) {
+      const p = payload as Record<string, unknown>;
+      pushRecent({
+        timestamp: new Date().toISOString(),
+        type: _request.url === '/v1/verify' ? 'verify' : 'chat/verify',
+        verified: !!p.verified,
+        hallucination_score: (p.grounding as Record<string, unknown> | null)?.hallucination_score as number ?? null,
+        governance_exclusions: ((p.governance as Record<string, unknown> | null)?.excluded as unknown[] | null)?.length ?? 0,
+        output_governance_passed: (p.output_governance as Record<string, unknown> | null)?.passed as boolean ?? null,
+        escalation_action: (p.escalation as Record<string, unknown> | null)?.action as string ?? null,
+        violations: ((p.output_governance as Record<string, unknown> | null)?.violations as unknown[] | null)?.length ?? 0,
+        audit_id: (p.audit_id as string) ?? null,
+      });
+    }
+    return payload;
+  });
 
   await app.register(fastifyCors, { origin: true });
 
@@ -327,6 +367,9 @@ export async function createApp(config: ProxyConfig) {
     if (!config.auditStore) return reply.code(501).send({ error: 'Not configured' });
     const entry = config.auditStore.getByAuditId(req.params.id); if (!entry) return reply.code(404).send({ error: 'Audit entry not found' }); return entry;
   });
+
+  // ── Recent Verifications (monitor) ────────────────
+  app.get('/v1/recent', async () => recentBuffer);
 
   return app;
 }

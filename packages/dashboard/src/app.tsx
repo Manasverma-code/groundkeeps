@@ -4,6 +4,7 @@ import { Overview } from './pages/Overview.js';
 import { AuditLog } from './pages/AuditLog.js';
 import { Agents } from './pages/Agents.js';
 import { Policies } from './pages/Policies.js';
+import { Monitor } from './pages/Monitor.js';
 import './App.css';
 
 export function App() {
@@ -13,6 +14,7 @@ export function App() {
         <Routes>
           <Route path="/" element={<Overview />} />
           <Route path="/audit" element={<AuditLog />} />
+          <Route path="/monitor" element={<Monitor />} />
           <Route path="/agents" element={<Agents />} />
           <Route path="/policies" element={<Policies />} />
         </Routes>
