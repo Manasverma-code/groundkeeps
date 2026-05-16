@@ -22,17 +22,24 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
+      - name: Prepare landing page
+        run: |
+          mkdir -p _landing
+          cp index.html _landing/
+          cp CNAME _landing/ 2>/dev/null || true
+          touch _landing/.nojekyll
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: _landing
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: https://Ground-Keeps.in
     steps:
       - name: Deploy to GitHub Pages
         id: deployment

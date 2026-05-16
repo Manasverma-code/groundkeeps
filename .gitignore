@@ -6,3 +6,6 @@ dist/
 .turbo
 .next/
 coverage/
+pages_logs/
+pages_logs.zip
+start-proxy.mjs

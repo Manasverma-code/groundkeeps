@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ground-Keeps — Trust Layer for Enterprise AI</title>
+  <meta name="description" content="Open-source middleware that verifies every LLM output against real data and ensures every agent action stays within policy." />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,7 +16,6 @@
     }
     .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
 
-    /* ── Header ────────────────────────────────── */
     header {
       padding: 24px 0;
       display: flex; justify-content: space-between; align-items: center;
@@ -27,7 +27,6 @@
     }
     header nav a:hover { color: #5c3d2e; }
 
-    /* ── Hero ──────────────────────────────────── */
     .hero {
       padding: 100px 0 80px;
       text-align: center;
@@ -60,13 +59,11 @@
     }
     .btn-outline:hover { background: #f8f6f3; border-color: #c4a882; }
 
-    /* ── Logos ─────────────────────────────────── */
     .logos { padding: 40px 0 60px; text-align: center; border-top: 1px solid #eeeae5; }
     .logos p { font-size: 12px; color: #b8b8be; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
     .logo-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
     .logo-grid span { font-size: 14px; color: #8a8a8e; font-weight: 500; }
 
-    /* ── Features ──────────────────────────────── */
     .features { padding: 80px 0; }
     .features h3 { font-size: 28px; color: #1a1a1c; text-align: center; margin-bottom: 16px; letter-spacing: -0.5px; }
     .features > .container > p { text-align: center; color: #6a6a6e; margin-bottom: 48px; font-size: 16px; }
@@ -80,7 +77,6 @@
     .card h4 { font-size: 16px; color: #1a1a1c; margin-bottom: 8px; }
     .card p { font-size: 14px; color: #6a6a6e; line-height: 1.7; }
 
-    /* ── Architecture ──────────────────────────── */
     .arch { padding: 60px 0; border-top: 1px solid #eeeae5; }
     .arch h3 { font-size: 28px; color: #1a1a1c; text-align: center; margin-bottom: 40px; letter-spacing: -0.5px; }
     .arch .flow { max-width: 600px; margin: 0 auto; }
@@ -92,7 +88,6 @@
     .arch .flow pre .hl { color: #8b6f4e; font-weight: 600; }
     .arch .flow pre .arrow { color: #c4a882; }
 
-    /* ── CTA ───────────────────────────────────── */
     .cta {
       padding: 80px 0; text-align: center;
       background: #ffffff; border-top: 1px solid #eeeae5;
@@ -100,8 +95,17 @@
     .cta h3 { font-size: 28px; color: #1a1a1c; margin-bottom: 12px; letter-spacing: -0.5px; }
     .cta p { color: #6a6a6e; margin-bottom: 28px; }
 
-    /* ── Footer ────────────────────────────────── */
+    .stack-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #f5f1ec; border: 1px solid #ede8e3; border-radius: 6px;
+      padding: 4px 12px; font-size: 12px; color: #8a8a8e;
+    }
+
     footer { padding: 32px 0; text-align: center; font-size: 13px; color: #b8b8be; }
+
+    .domain-badge {
+      margin-top: 16px; font-size: 13px; color: #7a9e7e;
+    }
 
     @media (max-width: 640px) {
       .hero h2 { font-size: 32px; }
@@ -135,6 +139,7 @@
         <a class="btn" href="https://github.com/Manasverma-code/Ground-Keeps/blob/main/docs/INTEGRATION.md">Get Started →</a>
         <a class="btn btn-outline" href="https://github.com/Manasverma-code/Ground-Keeps">View on GitHub</a>
       </div>
+      <div class="domain-badge">Ground-Keeps.in — built in India</div>
     </div>
   </section>
 
@@ -224,7 +229,13 @@
   </section>
 
   <footer>
-    <p>Ground-Keeps — Open-source trust layer for enterprise AI.</p>
+    <div style="display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:8px;flex-wrap:wrap">
+      <span class="stack-badge">Node.js + TypeScript</span>
+      <span class="stack-badge">Fastify</span>
+      <span class="stack-badge">React + Recharts</span>
+      <span class="stack-badge">Docker</span>
+    </div>
+    <p>Ground-Keeps.in — Open-source trust layer for enterprise AI.</p>
   </footer>
 </body>
 </html>
