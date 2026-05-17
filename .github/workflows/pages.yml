@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: https://Ground-Keeps.in
+      url: https://groundkeeps.in
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
