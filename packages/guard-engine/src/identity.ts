@@ -41,6 +41,10 @@ export class AgentIdentityManager {
     return { agent_id: agentId, client_secret: clientSecret, token };
   }
 
+  loadAgent(agentId: string, name: string, scope: string, secret: string, createdAt: string): void {
+    this.agents.set(agentId, { name, scope, secret, createdAt });
+  }
+
   verifyToken(token: string): { agentId: string; scope: string } | null {
     try {
       const parts = token.split('.');

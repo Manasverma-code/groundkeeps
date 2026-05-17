@@ -30,6 +30,7 @@ services:
       - VERIFIER_LLM_API_KEY=${VERIFIER_LLM_API_KEY}
       - VERIFIER_LLM_MODEL=${VERIFIER_LLM_MODEL}
       - AUDIT_DB_PATH=${AUDIT_DB_PATH:-/data/audit.db}
+      - GUARD_DB_PATH=${GUARD_DB_PATH:-/data/guard.json}
       - DEFAULT_AGENT_ID=${DEFAULT_AGENT_ID:-default}
     volumes:
       - audit-data:/data

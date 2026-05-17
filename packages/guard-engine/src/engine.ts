@@ -1,14 +1,27 @@
 import type { Policy, PolicyEvaluation } from '@trust-layer/shared';
 import { AgentIdentityManager } from './identity.js';
 import { PolicyEngine } from './policy-engine.js';
+import { GuardStore } from './store.js';
 
 export class GuardEngine {
   private identityManager: AgentIdentityManager;
   private policyEngine: PolicyEngine;
+  private store: GuardStore;
 
-  constructor(signingKey?: string) {
+  constructor(signingKey?: string, store?: GuardStore) {
+    this.store = store ?? new GuardStore(':memory:');
     this.identityManager = new AgentIdentityManager(signingKey);
     this.policyEngine = new PolicyEngine();
+    this.loadFromStore();
+  }
+
+  private loadFromStore(): void {
+    for (const [agentId, agent] of Object.entries(this.store.listAgents())) {
+      this.identityManager.loadAgent(agentId, agent.name, agent.scope, agent.secret, agent.createdAt);
+    }
+    for (const policy of this.store.listPolicies()) {
+      this.policyEngine.setPolicy(policy as unknown as Policy);
+    }
   }
 
   evaluate(action: string, resource: string, agentId: string): PolicyEvaluation {
@@ -17,10 +30,17 @@ export class GuardEngine {
 
   setPolicy(policy: Policy): void {
     this.policyEngine.setPolicy(policy);
+    this.store.setPolicy({
+      agent: policy.agent,
+      allow: (policy.allow ?? []).map((r) => ({ action: r.action, resource: r.resource })),
+      deny: (policy.deny ?? []).map((r) => ({ action: r.action, resource: r.resource })),
+    });
   }
 
   removePolicy(agentPattern: string): boolean {
-    return this.policyEngine.removePolicy(agentPattern);
+    const removed = this.policyEngine.removePolicy(agentPattern);
+    if (removed) this.store.removePolicy(agentPattern);
+    return removed;
   }
 
   verifyAction(
@@ -47,7 +67,17 @@ export class GuardEngine {
   }
 
   registerAgent(name: string, scope: string) {
-    return this.identityManager.registerAgent({ name, scope });
+    const creds = this.identityManager.registerAgent({ name, scope });
+    const agent = this.identityManager.getAgent(creds.agent_id);
+    if (agent) {
+      this.store.setAgent(creds.agent_id, {
+        name: agent.name,
+        scope: agent.scope,
+        secret: creds.client_secret,
+        createdAt: agent.created_at,
+      });
+    }
+    return creds;
   }
 
   getAgent(agentId: string) {
@@ -59,7 +89,9 @@ export class GuardEngine {
   }
 
   revokeAgent(agentId: string) {
-    return this.identityManager.revokeAgent(agentId);
+    const revoked = this.identityManager.revokeAgent(agentId);
+    if (revoked) this.store.deleteAgent(agentId);
+    return revoked;
   }
 
   verifyToken(token: string) {

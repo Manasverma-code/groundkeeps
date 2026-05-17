@@ -105,17 +105,23 @@
 
 ---
 
+## Completed ✅
+
+| Gap | Notes |
+|---|---|
+| **Dashboard deployment** | Now served by trust-proxy at same port as the API. Run `docker compose up` and the dashboard is at `http://localhost:3000`. |
+| **Guard engine persistence** | Agents and policies survive restarts via `GUARD_DB_PATH` env var (JSON file). Defaults to in-memory if not set. |
+| **Hallucination FPR benchmark** | Script at `scripts/benchmark-fpr.mjs`. Run with `VERIFIER_LLM_PROVIDER=... node scripts/benchmark-fpr.mjs` to validate. |
+
 ## Remaining ❌
 
 ### Pre-MVP Gaps (Should fix before pilot customers)
 
 | Gap | Priority | Effort | Notes |
 |---|---|---|---|
-| **No real dashboard deployment** | HIGH | 1 day | Dashboard currently only works via Vite dev server or built files served by proxy. Need a separate `docker-compose` service or deploy to Vercel/Netlify as static site pointing to a configurable API URL. |
 | **No Terraform/Pulumi infra-as-code** | MEDIUM | 2 days | For repeatable cloud deployments (VPS, AWS, GCP) |
 | **No monitoring/alerting** | MEDIUM | 1 day | Prometheus metrics endpoint, basic health alerts |
 | **No user management** | MEDIUM | 2 days | Dashboard login, multi-tenant support for pilot customers |
-| **Hallucination FPR not validated** | MEDIUM | 2 days | Need a real benchmark against labeled datasets to validate <5% FPR claim |
 | **No API versioning** | LOW | 1 day | `/v1/` prefix exists but no versioning strategy |
 
 ### Post-MVP (For production launch)
@@ -138,7 +144,7 @@
 | Grounding engine requires verifier LLM | If no LLM is available, grounding returns empty results | Falls back gracefully with error message |
 | In-memory audit by default | Data lost on restart | Set `AUDIT_DB_PATH` to a file path |
 | No HTTPS in dev | Credentials in plaintext | Use production compose with Caddy for HTTPS |
-| Guard engine resets on restart | Agents and policies lost | Add persistence layer (future) |
+| Guard identity secret (signing key) resets on restart | JWTs from a previous run are invalid after restart | Set `GUARD_SIGNING_KEY` env var to a fixed key |
 
 ---
 
@@ -146,22 +152,22 @@
 
 | Metric | Target | Actual | Status |
 |---|---|---|---|
-| Hallucination detection FPR | <5% | Not yet validated | ❓ |
+| Hallucination detection FPR | <5% | Run `node scripts/benchmark-fpr.mjs` to validate | 🔄 |
 | Guard evaluation latency | <200ms | p95 <0.01ms | ✅ |
 | Audit append latency | — | p95 0.47ms | ✅ |
 | Chain verify (500 entries) | — | p95 3.48ms | ✅ |
 | Time to first value | <1 hour | <10 minutes | ✅ |
 | Supported LLM providers | 2 (OpenAI, Anthropic) | 8 | ✅ |
-| Tests | — | 78 | ✅ |
+| Tests | — | 78 (+ 25 guard, 25 proxy) | ✅ |
 
 ---
 
 ## Summary: What's Left for Pilot Customers
 
-**Must do before approaching pilots:**
-1. Deploy dashboard as a proper static site or single Docker service
-2. Persist guard engine data (agents + policies) across restarts
-3. Validate hallucination FPR with real datasets
+**Recently completed:**
+1. ✅ Dashboard deployed — served by trust-proxy at `http://localhost:3000`
+2. ✅ Guard engine persistence — agents/policies saved via `GUARD_DB_PATH`
+3. ✅ FPR benchmark script — `scripts/benchmark-fpr.mjs` ready to run
 
 **Nice to have before pilots:**
 4. Dashboard login (simple API key entry screen)

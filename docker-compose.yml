@@ -15,20 +15,12 @@ services:
       - VERIFIER_LLM_API_KEY=${VERIFIER_LLM_API_KEY:-}
       - VERIFIER_LLM_MODEL=${VERIFIER_LLM_MODEL:-llama3.2}
       - AUDIT_DB_PATH=/data/audit.db
+      - GUARD_DB_PATH=/data/guard.json
       - DEFAULT_AGENT_ID=default
     volumes:
       - audit-data:/data
 
-  dashboard:
-    build:
-      context: .
-      target: dashboard
-    ports:
-      - "5173:5173"
-    environment:
-      - VITE_API_URL=http://localhost:3000
-    depends_on:
-      - trust-proxy
+
 
 volumes:
   audit-data:

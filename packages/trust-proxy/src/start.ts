@@ -1,6 +1,6 @@
 import { createProvider, providerFromEnv } from '@trust-layer/providers';
 import { GroundingEngine, DocumentGovernanceEngine, OutputGovernanceEngine, EscalationEngine } from '@trust-layer/grounding-engine';
-import { GuardEngine } from '@trust-layer/guard-engine';
+import { GuardEngine, GuardStore } from '@trust-layer/guard-engine';
 import { AuditStore } from '@trust-layer/audit-store';
 import { existsSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -32,7 +32,8 @@ export async function startProxy() {
   const outputGovernanceEngine = new OutputGovernanceEngine();
   const escalationEngine = new EscalationEngine(verifierProvider);
 
-  const guardEngine = new GuardEngine();
+  const guardStore = new GuardStore(process.env['GUARD_DB_PATH']);
+  const guardEngine = new GuardEngine(undefined, guardStore);
 
   const auditStore = await AuditStore.create(auditPath ?? ':memory:');
 
@@ -59,7 +60,7 @@ export async function startProxy() {
   console.log(`\n  🛡️  Ground-Keeps running on http://localhost:${port}`);
   console.log(`  📡 Target LLM:   ${targetConfig.name} (${targetConfig.defaultModel})`);
   console.log(`  🔍 Verifier LLM: ${verifierConfig.name} (${verifierConfig.defaultModel})`);
-  console.log(`  🛡️  Guard Engine: enabled`);
+  console.log(`  🛡️  Guard Engine: enabled (${process.env['GUARD_DB_PATH'] ? 'persistent' : 'in-memory'})`);
   console.log(`  🔑 API Auth:     ${apiKey ? 'required (Authorization: Bearer <key>)' : 'disabled'}`);
   console.log(`  📋 Audit Store:  ${auditPath ?? 'in-memory'}`);
   console.log(`  ⚡ Rate Limit:   100 req/min per client`);
