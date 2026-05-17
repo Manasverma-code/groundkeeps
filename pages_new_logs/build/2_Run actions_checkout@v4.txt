@@ -1,0 +1,72 @@
+﻿2026-05-16T10:18:40.4128367Z ##[group]Run actions/checkout@v4
+2026-05-16T10:18:40.4129318Z with:
+2026-05-16T10:18:40.4129797Z   repository: Manasverma-code/Ground-Keeps
+2026-05-16T10:18:40.4130600Z   token: ***
+2026-05-16T10:18:40.4131017Z   ssh-strict: true
+2026-05-16T10:18:40.4131424Z   ssh-user: git
+2026-05-16T10:18:40.4131857Z   persist-credentials: true
+2026-05-16T10:18:40.4132343Z   clean: true
+2026-05-16T10:18:40.4132771Z   sparse-checkout-cone-mode: true
+2026-05-16T10:18:40.4133271Z   fetch-depth: 1
+2026-05-16T10:18:40.4133678Z   fetch-tags: false
+2026-05-16T10:18:40.4134128Z   show-progress: true
+2026-05-16T10:18:40.4134547Z   lfs: false
+2026-05-16T10:18:40.4134939Z   submodules: false
+2026-05-16T10:18:40.4135362Z   set-safe-directory: true
+2026-05-16T10:18:40.4136318Z ##[endgroup]
+2026-05-16T10:18:40.5364018Z Syncing repository: Manasverma-code/Ground-Keeps
+2026-05-16T10:18:40.5370932Z ##[group]Getting Git version info
+2026-05-16T10:18:40.5373228Z Working directory is '/home/runner/work/Ground-Keeps/Ground-Keeps'
+2026-05-16T10:18:40.5377069Z [command]/usr/bin/git version
+2026-05-16T10:18:40.5450803Z git version 2.54.0
+2026-05-16T10:18:40.5480099Z ##[endgroup]
+2026-05-16T10:18:40.5512374Z Temporarily overriding HOME='/home/runner/work/_temp/f324643f-d1d2-4e5d-8ec2-9ef0b385a2af' before making global git config changes
+2026-05-16T10:18:40.5515615Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-16T10:18:40.5519979Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Ground-Keeps/Ground-Keeps
+2026-05-16T10:18:40.5573273Z Deleting the contents of '/home/runner/work/Ground-Keeps/Ground-Keeps'
+2026-05-16T10:18:40.5579389Z ##[group]Initializing the repository
+2026-05-16T10:18:40.5592153Z [command]/usr/bin/git init /home/runner/work/Ground-Keeps/Ground-Keeps
+2026-05-16T10:18:40.5678553Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-05-16T10:18:40.5680934Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-05-16T10:18:40.5683762Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-05-16T10:18:40.5685153Z hint: call:
+2026-05-16T10:18:40.5686144Z hint:
+2026-05-16T10:18:40.5689394Z hint: 	git config --global init.defaultBranch <name>
+2026-05-16T10:18:40.5690613Z hint:
+2026-05-16T10:18:40.5691776Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-05-16T10:18:40.5693637Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-05-16T10:18:40.5695149Z hint:
+2026-05-16T10:18:40.5696928Z hint: 	git branch -m <name>
+2026-05-16T10:18:40.5697840Z hint:
+2026-05-16T10:18:40.5698961Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-05-16T10:18:40.5701321Z Initialized empty Git repository in /home/runner/work/Ground-Keeps/Ground-Keeps/.git/
+2026-05-16T10:18:40.5712915Z [command]/usr/bin/git remote add origin https://github.com/Manasverma-code/Ground-Keeps
+2026-05-16T10:18:40.5755338Z ##[endgroup]
+2026-05-16T10:18:40.5757457Z ##[group]Disabling automatic garbage collection
+2026-05-16T10:18:40.5760637Z [command]/usr/bin/git config --local gc.auto 0
+2026-05-16T10:18:40.5796549Z ##[endgroup]
+2026-05-16T10:18:40.5798545Z ##[group]Setting up auth
+2026-05-16T10:18:40.5804459Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-05-16T10:18:40.5845326Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-05-16T10:18:40.6210838Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-16T10:18:40.6248586Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-05-16T10:18:40.6497345Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-16T10:18:40.6547086Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-05-16T10:18:40.6807034Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-05-16T10:18:40.6851482Z ##[endgroup]
+2026-05-16T10:18:40.6853538Z ##[group]Fetching the repository
+2026-05-16T10:18:40.6863965Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +c6906c33fefd655c29b871af411baf6fab349f32:refs/remotes/origin/main
+2026-05-16T10:18:41.1101339Z From https://github.com/Manasverma-code/Ground-Keeps
+2026-05-16T10:18:41.1104006Z  * [new ref]         c6906c33fefd655c29b871af411baf6fab349f32 -> origin/main
+2026-05-16T10:18:41.1141299Z ##[endgroup]
+2026-05-16T10:18:41.1143016Z ##[group]Determining the checkout info
+2026-05-16T10:18:41.1144798Z ##[endgroup]
+2026-05-16T10:18:41.1150208Z [command]/usr/bin/git sparse-checkout disable
+2026-05-16T10:18:41.1200971Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-05-16T10:18:41.1230976Z ##[group]Checking out the ref
+2026-05-16T10:18:41.1235019Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-05-16T10:18:41.1347575Z Switched to a new branch 'main'
+2026-05-16T10:18:41.1352523Z branch 'main' set up to track 'origin/main'.
+2026-05-16T10:18:41.1359412Z ##[endgroup]
+2026-05-16T10:18:41.1568759Z [command]/usr/bin/git log -1 --format=%H
+2026-05-16T10:18:41.1569809Z c6906c33fefd655c29b871af411baf6fab349f32
