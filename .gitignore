@@ -9,3 +9,6 @@ coverage/
 pages_logs/
 pages_logs.zip
 start-proxy.mjs
+
+pages_new_logs/
+pages_new_logs.zip
