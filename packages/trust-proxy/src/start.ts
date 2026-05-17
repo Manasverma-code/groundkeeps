@@ -68,3 +68,8 @@ export async function startProxy() {
   console.log(``);
   return app;
 }
+
+startProxy().catch((err) => {
+  console.error('Failed to start proxy:', err);
+  process.exit(1);
+});
