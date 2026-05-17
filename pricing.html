@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing — Ground-Keeps</title>
+  <meta name="description" content="Ground-Keeps pricing — free self-hosted open-source or enterprise managed." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #faf8f5; color: #2c2c2e; line-height: 1.6;
+    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+    header {
+      padding: 24px 0; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid #eeeae5;
+    }
+    header h1 { font-size: 18px; font-weight: 700; color: #8b6f4e; letter-spacing: -0.3px; }
+    header h1 a { color: #8b6f4e; text-decoration: none; }
+    header nav a {
+      color: #8a8a8e; margin-left: 24px; text-decoration: none; font-size: 14px; font-weight: 500;
+    }
+    header nav a:hover { color: #5c3d2e; }
+    header nav a.active { color: #5c3d2e; }
+    .page { padding: 60px 0 80px; }
+    .page h2 { font-size: 36px; color: #1a1a1c; text-align: center; margin-bottom: 8px; letter-spacing: -1px; }
+    .page .subtitle { text-align: center; color: #6a6a6e; font-size: 16px; margin-bottom: 48px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; align-items: start; }
+    .plan {
+      background: #fff; border: 1px solid #ede8e3; border-radius: 16px; padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: box-shadow 0.2s;
+    }
+    .plan:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .plan.featured {
+      border-color: #c4a882; box-shadow: 0 0 0 2px #c4a882, 0 8px 24px rgba(0,0,0,0.08);
+      transform: scale(1.02); position: relative;
+    }
+    .plan .badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: #8b6f4e; color: #fff; padding: 4px 16px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+    }
+    .plan h3 { font-size: 20px; color: #1a1a1c; margin-bottom: 4px; }
+    .plan .price { font-size: 40px; font-weight: 800; color: #1a1a1c; margin: 16px 0; }
+    .plan .price span { font-size: 16px; font-weight: 400; color: #8a8a8e; }
+    .plan p { color: #6a6a6e; font-size: 14px; margin-bottom: 20px; }
+    .plan ul { list-style: none; padding: 0; margin: 0 0 24px; }
+    .plan ul li { padding: 6px 0; font-size: 14px; color: #4a4a4e; }
+    .plan ul li::before { content: "✓ "; color: #7a9e7e; font-weight: 700; }
+    .btn {
+      display: block; text-align: center; background: #8b6f4e; color: #fff;
+      padding: 12px 24px; border-radius: 10px; text-decoration: none;
+      font-weight: 600; font-size: 14px; transition: background 0.15s;
+    }
+    .btn:hover { background: #7a5f42; }
+    .btn-outline {
+      background: transparent; border: 1px solid #d4cdc6; color: #4a4a4e;
+    }
+    .btn-outline:hover { background: #f8f6f3; border-color: #c4a882; }
+    .faq { margin-top: 60px; }
+    .faq h3 { font-size: 24px; text-align: center; margin-bottom: 24px; }
+    .faq-item { margin-bottom: 20px; }
+    .faq-item h4 { font-size: 16px; color: #1a1a1c; margin-bottom: 4px; }
+    .faq-item p { font-size: 14px; color: #6a6a6e; }
+    footer { padding: 32px 0; text-align: center; font-size: 13px; color: #b8b8be; border-top: 1px solid #eeeae5; }
+    @media (max-width: 640px) {
+      .page h2 { font-size: 28px; }
+      header nav a { margin-left: 16px; font-size: 13px; }
+      .plan.featured { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><a href="/">Ground-Keeps</a></h1>
+      <nav>
+        <a href="/about.html">About</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/blog.html">Blog</a>
+        <a href="https://github.com/Manasverma-code/Ground-Keeps">GitHub</a>
+        <a href="https://github.com/Manasverma-code/Ground-Keeps/blob/main/docs/INTEGRATION.md">Docs</a>
+      </nav>
+    </header>
+  </div>
+
+  <section class="page">
+    <div class="container">
+      <h2>Simple Pricing</h2>
+      <p class="subtitle">Start free. Scale when you need to.</p>
+
+      <div class="pricing-grid">
+        <div class="plan">
+          <h3>Self-Hosted</h3>
+          <div class="price">Free <span>/ forever</span></div>
+          <p>MIT-licensed open-source. Run on your own infrastructure.</p>
+          <ul>
+            <li>Full grounding engine</li>
+            <li>Full guard engine</li>
+            <li>Audit store with SHA-256 chains</li>
+            <li>React dashboard</li>
+            <li>All 8 LLM providers</li>
+            <li>Community support (GitHub)</li>
+          </ul>
+          <a class="btn" href="https://github.com/Manasverma-code/Ground-Keeps">Self-Host Now →</a>
+        </div>
+
+        <div class="plan featured">
+          <span class="badge">POPULAR</span>
+          <h3>Managed Cloud</h3>
+          <div class="price">$0.001 <span>/ verification</span></div>
+          <p>Fully managed. We run the proxy, you get the dashboard.</p>
+          <ul>
+            <li>Everything in Self-Hosted</li>
+            <li>Managed infrastructure</li>
+            <li>99.9% uptime SLA</li>
+            <li>Dedicated dashboard URL</li>
+            <li>Automated backups</li>
+            <li>Email support</li>
+          </ul>
+          <a class="btn" href="mailto:hello@groundkeeps.in?subject=Managed%20Cloud%20Inquiry">Contact Sales →</a>
+        </div>
+
+        <div class="plan">
+          <h3>Enterprise</h3>
+          <div class="price">Custom</div>
+          <p>On-prem deployment, SSO, compliance, and dedicated support.</p>
+          <ul>
+            <li>Everything in Managed Cloud</li>
+            <li>On-prem / air-gapped deployment</li>
+            <li>SAML / SSO integration</li>
+            <li>SOC 2 evidence reports</li>
+            <li>Fine-tuned verification models</li>
+            <li>Dedicated support engineer</li>
+          </ul>
+          <a class="btn btn-outline" href="mailto:hello@groundkeeps.in?subject=Enterprise%20Inquiry">Contact Us →</a>
+        </div>
+      </div>
+
+      <div class="faq">
+        <h3>Frequently Asked Questions</h3>
+        <div class="faq-item">
+          <h4>Is there a usage limit on the free self-hosted version?</h4>
+          <p>No. It's MIT-licensed — use it for any purpose, commercial or otherwise. The only limit is your own infrastructure.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Does the managed cloud touch my data?</h4>
+          <p>If you use our managed cloud, verification requests pass through our proxy. We do not store your source documents or LLM responses beyond the audit chain metadata. For complete data sovereignty, use the self-hosted version.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Can I get a trial of the managed cloud?</h4>
+          <p>Yes — email us at hello@groundkeeps.in and we'll set up a free trial with 10,000 verifications.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>groundkeeps.in — Open-source trust layer for enterprise AI.</p>
+  </footer>
+</body>
+</html>
