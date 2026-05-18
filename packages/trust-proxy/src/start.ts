@@ -42,6 +42,11 @@ export async function startProxy() {
 
   const apiKey = process.env['PROXY_API_KEY'];
 
+  if (!apiKey) {
+    console.warn('\n  ⚠️  WARNING: PROXY_API_KEY is not set. All API endpoints are accessible without authentication.');
+    console.warn('  ⚠️  Set PROXY_API_KEY in your environment or .env file for production use.\n');
+  }
+
   const app = await createApp({
     targetProvider,
     groundingEngine,
@@ -64,6 +69,7 @@ export async function startProxy() {
   console.log(`  🔑 API Auth:     ${apiKey ? 'required (Authorization: Bearer <key>)' : 'disabled'}`);
   console.log(`  📋 Audit Store:  ${auditPath ?? 'in-memory'}`);
   console.log(`  ⚡ Rate Limit:   100 req/min per client`);
+  console.log(`  ⏱️  LLM Timeout:  120s`);
   if (dashboardDir) console.log(`  📊 Dashboard:    http://localhost:${port}`);
   console.log(``);
   return app;

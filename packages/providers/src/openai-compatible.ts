@@ -21,6 +21,7 @@ export class OpenAICompatibleProvider implements LLMProvider {
   async chat(request: ChatRequest): Promise<ChatResponse> {
     const baseUrl = this.config.baseUrl ?? PROVIDER_BASE_URLS[this.config.name] ?? PROVIDER_BASE_URLS.openai;
     const url = `${baseUrl}/chat/completions`;
+    const timeoutMs = 120_000;
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -42,11 +43,25 @@ export class OpenAICompatibleProvider implements LLMProvider {
     if (request.maxTokens !== undefined) body.max_tokens = request.maxTokens;
     if (request.temperature !== undefined) body.temperature = request.temperature;
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-    });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+    } catch (err) {
+      clearTimeout(timer);
+      if ((err as Error).name === 'AbortError') {
+        throw new Error(`[${this.config.name}] Request timed out after ${timeoutMs / 1000}s`);
+      }
+      throw err;
+    }
+    clearTimeout(timer);
 
     if (!response.ok) {
       const error = await response.text().catch(() => 'Unknown error');

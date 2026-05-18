@@ -1,5 +1,5 @@
 import Fastify, { type FastifyRequest, type FastifyReply } from 'fastify';
-import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
+import { createHash, timingSafeEqual } from 'node:crypto';
 import type { LLMProvider, ChatRequest, LLMMessage } from '@trust-layer/providers';
 import type { AuditStore } from '@trust-layer/audit-store';
 import type { GroundingEngine, DocumentGovernanceEngine, OutputGovernanceEngine, EscalationEngine } from '@trust-layer/grounding-engine';
@@ -9,6 +9,13 @@ import fastifyCors from '@fastify/cors';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyStatic from '@fastify/static';
 import { existsSync } from 'node:fs';
+import { z } from 'zod';
+import {
+  ChatBodySchema, VerifyBodySchema, ChatVerifyBodySchema,
+  CreateAgentBodySchema, PolicyBodySchema,
+  EvaluateBodySchema, VerifyActionBodySchema,
+} from './validation.js';
+import { computeSummary } from './audit-summarizer.js';
 
 interface ProxyConfig {
   targetProvider: LLMProvider;
@@ -47,18 +54,36 @@ function authHook(config: ProxyConfig) {
     if (req.url.startsWith('/v1/')) {
       const auth = req.headers['authorization'];
       if (!auth || !auth.startsWith('Bearer ')) {
+        req.log.error({ url: req.url, ip: req.ip }, 'Auth failed: missing or malformed Authorization header');
         return reply.code(401).send({ error: 'Missing or invalid Authorization header. Use: Authorization: Bearer <PROXY_API_KEY>' });
       }
       const key = auth.slice(7);
       if (key.length !== config.apiKey.length || !timingSafeEqual(Buffer.from(key), Buffer.from(config.apiKey))) {
+        req.log.error({ url: req.url, ip: req.ip }, 'Auth failed: invalid API key');
         return reply.code(401).send({ error: 'Invalid API key' });
       }
     }
   };
 }
 
+function validateOrReply(schema: z.ZodSchema, body: unknown, reply: FastifyReply): boolean {
+  const result = schema.safeParse(body);
+  if (!result.success) {
+    reply.code(400).send({
+      error: 'Validation failed',
+      details: result.error.issues.map((i) => ({
+        path: i.path.join('.'),
+        message: i.message,
+        code: i.code,
+      })),
+    });
+    return false;
+  }
+  return true;
+}
+
 export async function createApp(config: ProxyConfig) {
-  const app = Fastify({ logger: true });
+  const app = Fastify({ logger: true, bodyLimit: 5 * 1024 * 1024 });
 
   const recentBuffer: RecentVerification[] = [];
   function pushRecent(entry: RecentVerification) {
@@ -130,11 +155,9 @@ export async function createApp(config: ProxyConfig) {
   }));
 
   // ── Chat only ────────────────────────────────────
-  app.post<{
-    Body: { model?: string; messages: { role: string; content: string }[]; max_tokens?: number; temperature?: number };
-  }>('/v1/chat', async (req, reply) => {
-    const { model, messages, max_tokens, temperature } = req.body;
-    if (!messages?.length) return reply.code(400).send({ error: 'messages required' });
+  app.post('/v1/chat', async (req, reply) => {
+    if (!validateOrReply(ChatBodySchema, req.body, reply)) return;
+    const { model, messages, max_tokens, temperature } = req.body as z.infer<typeof ChatBodySchema>;
 
     try {
       const chatRequest: ChatRequest = {
@@ -162,11 +185,9 @@ export async function createApp(config: ProxyConfig) {
   });
 
   // ── Verify ───────────────────────────────────────
-  app.post<{
-    Body: { response: string; sources: SourceDocument[]; action: string; resource: string; agent_token?: string; agent_id?: string; governance?: DocumentGovernanceConfig; output_governance?: OutputGovernanceConfig; escalation?: EscalationConfig };
-  }>('/v1/verify', async (req, reply) => {
-    const { response, sources, action, resource, agent_token, agent_id, governance, output_governance, escalation } = req.body;
-    if (!response) return reply.code(400).send({ error: 'response required' });
+  app.post('/v1/verify', async (req, reply) => {
+    if (!validateOrReply(VerifyBodySchema, req.body, reply)) return;
+    const { response, sources, action, resource, agent_token, agent_id, governance, output_governance, escalation } = req.body as z.infer<typeof VerifyBodySchema>;
 
     // 1. Document governance (pre-filter sources)
     let governanceResult: DocumentGovernanceResult | null = null;
@@ -237,11 +258,9 @@ export async function createApp(config: ProxyConfig) {
   });
 
   // ── Chat + Verify ─────────────────────────────────
-  app.post<{
-    Body: { model?: string; messages: { role: string; content: string }[]; sources: SourceDocument[]; action: string; resource: string; agent_token?: string; agent_id?: string; max_tokens?: number; temperature?: number; governance?: DocumentGovernanceConfig; output_governance?: OutputGovernanceConfig; escalation?: EscalationConfig };
-  }>('/v1/chat/verify', async (req, reply) => {
-    const { model, messages, sources, action, resource, agent_token, agent_id, max_tokens, temperature, governance, output_governance, escalation } = req.body;
-    if (!messages?.length) return reply.code(400).send({ error: 'messages required' });
+  app.post('/v1/chat/verify', async (req, reply) => {
+    if (!validateOrReply(ChatVerifyBodySchema, req.body, reply)) return;
+    const { model, messages, sources, action, resource, agent_token, agent_id, max_tokens, temperature, governance, output_governance, escalation } = req.body as z.infer<typeof ChatVerifyBodySchema>;
 
     // 1. Document governance (pre-filter sources)
     let governanceResult: DocumentGovernanceResult | null = null;
@@ -316,10 +335,11 @@ export async function createApp(config: ProxyConfig) {
   });
 
   // ── Agent Management ──────────────────────────────
-  app.post<{ Body: { name: string; scope: string } }>('/v1/agents', async (req, reply) => {
+  app.post('/v1/agents', async (req, reply) => {
     if (!config.guardEngine) return reply.code(501).send({ error: 'Guard engine not configured' });
-    if (!req.body?.name || !req.body?.scope) return reply.code(400).send({ error: 'name and scope required' });
-    return reply.code(201).send(config.guardEngine.registerAgent(req.body.name, req.body.scope));
+    if (!validateOrReply(CreateAgentBodySchema, req.body, reply)) return;
+    const { name, scope } = req.body as z.infer<typeof CreateAgentBodySchema>;
+    return reply.code(201).send(config.guardEngine.registerAgent(name, scope));
   });
   app.get('/v1/agents', async () => config.guardEngine?.listAgents() ?? []);
   app.get<{ Params: { id: string } }>('/v1/agents/:id', async (req, reply) => {
@@ -333,18 +353,23 @@ export async function createApp(config: ProxyConfig) {
   });
 
   // ── Policies ──────────────────────────────────────
-  app.post<{ Body: Record<string, unknown> }>('/v1/policies', async (req, reply) => {
+  app.post('/v1/policies', async (req, reply) => {
     if (!config.guardEngine) return reply.code(501).send({ error: 'Guard engine not configured' });
+    if (!validateOrReply(PolicyBodySchema, req.body, reply)) return;
     config.guardEngine.setPolicy(req.body as unknown as Policy); return reply.code(201).send({ status: 'Policy set' });
   });
   app.get('/v1/policies', async () => config.guardEngine?.listPolicies() ?? []);
-  app.post<{ Body: { action: string; resource: string; agent_id: string } }>('/v1/evaluate', async (req) => {
+  app.post('/v1/evaluate', async (req, reply) => {
     if (!config.guardEngine) return { allowed: true, reason: 'Guard engine not configured' };
-    return config.guardEngine.evaluate(req.body.action, req.body.resource, req.body.agent_id);
+    if (!validateOrReply(EvaluateBodySchema, req.body, reply)) return;
+    const { action, resource, agent_id } = req.body as z.infer<typeof EvaluateBodySchema>;
+    return config.guardEngine.evaluate(action, resource, agent_id);
   });
-  app.post<{ Body: { token: string; action: string; resource: string } }>('/v1/verify-action', async (req) => {
+  app.post('/v1/verify-action', async (req, reply) => {
     if (!config.guardEngine) return { allowed: true, evaluation: { allowed: true, reason: 'No guard engine' } };
-    return config.guardEngine.verifyAction(req.body.token, req.body.action, req.body.resource);
+    if (!validateOrReply(VerifyActionBodySchema, req.body, reply)) return;
+    const { token, action, resource } = req.body as z.infer<typeof VerifyActionBodySchema>;
+    return config.guardEngine.verifyAction(token, action, resource);
   });
 
   // ── Audit Log ─────────────────────────────────────
@@ -370,6 +395,11 @@ export async function createApp(config: ProxyConfig) {
 
   // ── Recent Verifications (monitor) ────────────────
   app.get('/v1/recent', async () => recentBuffer);
+
+  // ── Audit Executive Summary ─────────────────────
+  app.get('/v1/audit/summary', async () => {
+    return computeSummary(recentBuffer);
+  });
 
   return app;
 }
