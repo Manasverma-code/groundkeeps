@@ -94,14 +94,15 @@
       <div class="pricing-grid">
         <div class="plan">
           <h3>Self-Hosted</h3>
-          <div class="price">Free <span>/ forever</span></div>
-          <p>MIT-licensed open-source. Run on your own infrastructure.</p>
+          <div class="price">Free</div>
+          <p>Open-source with rate limits. Run on your own infrastructure.</p>
           <ul>
-            <li>Full grounding engine</li>
-            <li>Full guard engine</li>
+            <li>Full grounding &amp; guard engine</li>
             <li>Audit store with SHA-256 chains</li>
             <li>React dashboard</li>
-            <li>All 8 LLM providers</li>
+            <li><strong>10,000</strong> verifications / month</li>
+            <li><strong>2</strong> agents</li>
+            <li><strong>30-day</strong> audit retention</li>
             <li>Community support (GitHub)</li>
           </ul>
           <a class="btn" href="https://github.com/Manasverma-code/Ground-Keeps">Self-Host Now →</a>
@@ -109,9 +110,24 @@
 
         <div class="plan featured">
           <span class="badge">POPULAR</span>
+          <h3>Self-Hosted Pro</h3>
+          <div class="price">₹2,999 <span>/ month</span></div>
+          <p>Unlimited self-hosted for production use. Same infra, no caps.</p>
+          <ul>
+            <li>Unlimited verifications</li>
+            <li>Unlimited agents</li>
+            <li>1-year audit retention</li>
+            <li>Priority GitHub issues</li>
+            <li>License key (offline-capable)</li>
+            <li>Email support</li>
+          </ul>
+          <a class="btn" href="https://rzp.io/rzp/5cvi7lw">Buy Now — ₹2,999/mo →</a>
+        </div>
+
+        <div class="plan">
           <h3>Managed Cloud</h3>
           <div class="price">₹999 <span>/ 10K verifications</span></div>
-          <p>Fully managed. We run the proxy, you get the dashboard. (~$12 for international)</p>
+          <p>Fully managed. We run the proxy, you get the dashboard. (~$12)</p>
           <ul>
             <li>Everything in Self-Hosted</li>
             <li>Managed infrastructure</li>
@@ -120,7 +136,7 @@
             <li>Automated backups</li>
             <li>Email support</li>
           </ul>
-          <a class="btn" href="https://rzp.io/rzp/5cvi7lw">Buy Now — ₹999 (~$12) →</a>
+          <a class="btn" href="https://rzp.io/rzp/5cvi7lw">Buy Now — ₹999 →</a>
         </div>
 
         <div class="plan">
@@ -128,7 +144,7 @@
           <div class="price">Custom</div>
           <p>On-prem deployment, SSO, compliance, and dedicated support.</p>
           <ul>
-            <li>Everything in Managed Cloud</li>
+            <li>Everything in Self-Hosted Pro</li>
             <li>On-prem / air-gapped deployment</li>
             <li>SAML / SSO integration</li>
             <li>SOC 2 evidence reports</li>
@@ -142,8 +158,12 @@
       <div class="faq">
         <h3>Frequently Asked Questions</h3>
         <div class="faq-item">
-          <h4>Is there a usage limit on the free self-hosted version?</h4>
-          <p>No. It's MIT-licensed — use it for any purpose, commercial or otherwise. The only limit is your own infrastructure.</p>
+          <h4>What are the limits on the free self-hosted version?</h4>
+          <p>10,000 verifications per month, 2 agents, and 30-day audit retention. Upgrade to Self-Hosted Pro for unlimited everything.</p>
+        </div>
+        <div class="faq-item">
+          <h4>How do you enforce limits on self-hosted?</h4>
+          <p>The proxy periodically checks a local usage counter against the license key. Free tier runs fully offline — Pro tier needs occasional online validation but works offline for 30 days.</p>
         </div>
         <div class="faq-item">
           <h4>Does the managed cloud touch my data?</h4>
