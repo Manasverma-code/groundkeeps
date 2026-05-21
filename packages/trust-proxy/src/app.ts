@@ -44,7 +44,7 @@ interface RecentVerification {
   audit_id: string | null;
 }
 
-const PUBLIC_ROUTES = new Set(['/health', '/']);
+const PUBLIC_ROUTES = new Set(['/health', '/', '/v1/metrics']);
 
 function authHook(config: ProxyConfig) {
   return async (req: FastifyRequest, reply: FastifyReply) => {
@@ -92,6 +92,10 @@ export async function createApp(config: ProxyConfig) {
       recentBuffer.length = MAX_RECENT_VERIFICATIONS;
     }
   }
+
+  let requestCount = 0;
+
+  app.addHook('onResponse', async (_request, _reply) => { requestCount++; });
 
   app.addHook('preSerialization', async (_request, _reply, payload) => {
     if (payload && typeof payload === 'object' && !Array.isArray(payload) && 'grounding' in payload) {
@@ -153,6 +157,24 @@ export async function createApp(config: ProxyConfig) {
     },
     target_llm: config.targetProvider.name,
   }));
+
+  // ── Metrics (public) ─────────────────────────────
+  app.get('/v1/metrics', async () => {
+    const startTime = process.uptime();
+    const auditCount = config.auditStore ? config.auditStore.count({}) : 0;
+    return {
+      uptime_seconds: Math.floor(startTime),
+      requests_total: requestCount,
+      audit_entries: auditCount,
+      version: '0.1.0',
+      engines: {
+        grounding: config.groundingEngine ? 'enabled' : 'disabled',
+        guard: config.guardEngine ? 'enabled' : 'disabled',
+        audit: config.auditStore ? 'enabled' : 'disabled',
+      },
+      rate_limit: { max: 100, window: '1 minute' },
+    };
+  });
 
   // ── Chat only ────────────────────────────────────
   app.post('/v1/chat', async (req, reply) => {

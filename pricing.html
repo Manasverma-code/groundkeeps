@@ -45,15 +45,23 @@
     .plan h3 { font-size: 20px; color: #1a1a1c; margin-bottom: 4px; }
     .plan .price { font-size: 40px; font-weight: 800; color: #1a1a1c; margin: 16px 0; }
     .plan .price span { font-size: 16px; font-weight: 400; color: #8a8a8e; }
+    .price-dual { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .price-option { display: flex; flex-direction: column; align-items: center; line-height: 1.2; }
+    .price-option .currency { font-size: 32px; font-weight: 800; color: #1a1a1c; }
+    .price-option .price-label { font-size: 11px; font-weight: 500; color: #8a8a8e; text-transform: uppercase; letter-spacing: 0.5px; }
+    .price-or { font-size: 12px; color: #b0b0b4; font-weight: 500; }
     .plan p { color: #6a6a6e; font-size: 14px; margin-bottom: 20px; }
     .plan ul { list-style: none; padding: 0; margin: 0 0 24px; }
     .plan ul li { padding: 6px 0; font-size: 14px; color: #4a4a4e; }
     .plan ul li::before { content: "✓ "; color: #7a9e7e; font-weight: 700; }
+    .btn-group { display: flex; gap: 8px; }
+    .btn-group .btn { flex: 1; }
     .btn {
       display: block; text-align: center; background: #8b6f4e; color: #fff;
       padding: 12px 24px; border-radius: 10px; text-decoration: none;
       font-weight: 600; font-size: 14px; transition: background 0.15s;
     }
+    .btn-sm { padding: 10px 12px; font-size: 13px; }
     .btn:hover { background: #7a5f42; }
     .btn-outline {
       background: transparent; border: 1px solid #d4cdc6; color: #4a4a4e;
@@ -111,7 +119,17 @@
         <div class="plan featured">
           <span class="badge">POPULAR</span>
           <h3>Self-Hosted Pro</h3>
-          <div class="price">₹8,499 <span>/ $99 month</span></div>
+          <div class="price price-dual">
+            <span class="price-option">
+              <span class="currency">$99</span>
+              <span class="price-label">International</span>
+            </span>
+            <span class="price-or">or</span>
+            <span class="price-option">
+              <span class="currency">₹8,499</span>
+              <span class="price-label">India</span>
+            </span>
+          </div>
           <p>Unlimited self-hosted for production use. Same infra, no caps.</p>
           <ul>
             <li>Unlimited verifications</li>
@@ -121,7 +139,10 @@
             <li>License key (offline-capable)</li>
             <li>Email support</li>
           </ul>
-          <a class="btn" href="https://rzp.io/rzp/UkBhJufz">Buy Now — ₹8,499/mo →</a>
+          <div class="btn-group">
+            <a class="btn btn-sm" href="PAYMENT_LINK_99">Buy $99/mo →</a>
+            <a class="btn btn-sm" href="https://rzp.io/rzp/UkBhJufz">Buy ₹8,499/mo →</a>
+          </div>
         </div>
 
 

@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { to: '/policies', label: 'Policies', icon: PoliciesIcon },
 ];
 
-export function Layout({ children }: { children: ReactNode }) {
+export function Layout({ children, onLogout }: { children: ReactNode; onLogout?: () => void }) {
   const [health, setHealth] = useState<'loading' | 'ok' | 'error'>('loading');
 
   useEffect(() => {
@@ -51,7 +51,14 @@ export function Layout({ children }: { children: ReactNode }) {
               {health === 'loading' ? 'Connecting...' : health === 'ok' ? 'Proxy Online' : 'Offline'}
             </span>
           </div>
-          <div className="sidebar-version">v0.1.0</div>
+          <div className="sidebar-footer-actions">
+            <span className="sidebar-version">v0.1.0</span>
+            {onLogout && (
+              <button className="logout-btn" onClick={onLogout} title="Sign out">
+                <LogoutIcon />
+              </button>
+            )}
+          </div>
         </div>
       </nav>
       <main className="main">{children}</main>
@@ -63,6 +70,16 @@ function ShieldIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  );
+}
+
+function LogoutIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
     </svg>
   );
 }

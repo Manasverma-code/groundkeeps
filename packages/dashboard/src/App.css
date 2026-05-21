@@ -254,6 +254,63 @@ pre {
 
 @keyframes slideIn { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+/* ── Login Page ───────────────────────────────────── */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f6f3;
+  padding: 24px;
+}
+.login-card {
+  background: #fff;
+  border: 1px solid #ede8e3;
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 8px;
+  color: #8b6f4e;
+}
+.login-brand h1 { font-size: 20px; font-weight: 700; }
+.login-subtitle {
+  text-align: center;
+  color: #8a8a8e;
+  font-size: 13px;
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+.login-error {
+  color: #c48a8a;
+  font-size: 12px;
+  margin: -8px 0 12px;
+}
+.login-card form button[disabled] { opacity: 0.5; cursor: not-allowed; }
+.login-card form { border: none; padding: 0; box-shadow: none; margin-bottom: 0; }
+
+/* ── Logout Button ────────────────────────────────── */
+.sidebar-footer-actions { display: flex; align-items: center; gap: 8px; }
+.logout-btn {
+  background: none;
+  border: 1px solid #e8e4df;
+  border-radius: 6px;
+  padding: 4px 6px;
+  cursor: pointer;
+  color: #b8b8be;
+  display: flex;
+  align-items: center;
+  transition: all 0.15s;
+}
+.logout-btn:hover { color: #c48a8a; border-color: #eedcdc; background: #f8eeee; }
+
 /* ── Recharts overrides ───────────────────────────── */
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line { stroke: #ede8e3 !important; }
