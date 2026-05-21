@@ -6,6 +6,7 @@ import { existsSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createApp } from './app.js';
+import type { WebhookConfig } from './webhooks.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -47,6 +48,19 @@ export async function startProxy() {
     console.warn('  ⚠️  Set PROXY_API_KEY in your environment or .env file for production use.\n');
   }
 
+  let webhookConfig: WebhookConfig | undefined;
+  const webhookUrl = process.env['WEBHOOK_URL'];
+  if (webhookUrl) {
+    const eventsRaw = process.env['WEBHOOK_EVENTS'] ?? 'policy_violation,escalation_blocked,high_hallucination';
+    const threshold = parseFloat(process.env['WEBHOOK_HALLUCINATION_THRESHOLD'] ?? '0.5');
+    webhookConfig = {
+      url: webhookUrl,
+      events: eventsRaw.split(',').map((e: string) => e.trim() as WebhookConfig['events'][number]),
+      hallucinationThreshold: isNaN(threshold) ? 0.5 : threshold,
+    };
+    console.log(`  🔔 Webhook:      ${webhookUrl} (events: ${webhookConfig.events.join(', ')})`);
+  }
+
   const app = await createApp({
     targetProvider,
     groundingEngine,
@@ -58,6 +72,7 @@ export async function startProxy() {
     defaultAgentId: process.env['DEFAULT_AGENT_ID'] ?? 'default',
     dashboardDir,
     apiKey,
+    webhookConfig,
   });
 
   const port = parseInt(process.env['PROXY_PORT'] ?? '3000', 10);

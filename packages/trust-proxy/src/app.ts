@@ -16,6 +16,7 @@ import {
   EvaluateBodySchema, VerifyActionBodySchema,
 } from './validation.js';
 import { computeSummary } from './audit-summarizer.js';
+import { type WebhookConfig, sendWebhook } from './webhooks.js';
 
 interface ProxyConfig {
   targetProvider: LLMProvider;
@@ -28,6 +29,7 @@ interface ProxyConfig {
   defaultAgentId?: string;
   dashboardDir?: string;
   apiKey?: string;
+  webhookConfig?: WebhookConfig;
 }
 
 const MAX_RECENT_VERIFICATIONS = 50;
@@ -246,7 +248,16 @@ export async function createApp(config: ProxyConfig) {
         }
       }
       if (escalationResult.action === 'block') {
+        sendWebhook(config.webhookConfig, 'escalation_blocked', { action, resource, agent_id: agent_id ?? 'unknown', message: escalationResult.message ?? 'Blocked by escalation' });
         return { verified: false, response: finalResponse, grounding: groundingResult, guard: { allowed: true, reason: 'Blocked by escalation' }, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, audit_id: null };
+      }
+    }
+
+    // 4b. Webhook: high hallucination
+    if (groundingResult?.hallucination_score && config.webhookConfig && config.webhookConfig.events.includes('high_hallucination')) {
+      const threshold = config.webhookConfig.hallucinationThreshold ?? 0.5;
+      if (groundingResult.hallucination_score >= threshold) {
+        sendWebhook(config.webhookConfig, 'high_hallucination', { action, resource, agent_id: agent_id ?? 'unknown', hallucination_score: groundingResult.hallucination_score, total_claims: groundingResult.claims.length, unsupported_claims: groundingResult.claims.filter(c => !c.supported).length });
       }
     }
 
@@ -259,13 +270,20 @@ export async function createApp(config: ProxyConfig) {
         const result = config.guardEngine.verifyAction(agent_token, action, resource);
         guardEval = result.evaluation;
         if (result.agentId) resolvedAgentId = result.agentId;
-        if (!result.allowed) { config.auditStore?.append({
-          agent_id: resolvedAgentId, action: `${action}:blocked`, resource,
-          policy_eval: guardEval, payload_hash: createHash('sha256').update(JSON.stringify({ response, governanceResult, outputGovernanceResult, escalationResult })).digest('hex'),
-        }); return reply.code(403).send({ verified: false, grounding: groundingResult, guard: guardEval, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, error: 'Action blocked by guard policy' }); }
+        if (!result.allowed) {
+          config.auditStore?.append({
+            agent_id: resolvedAgentId, action: `${action}:blocked`, resource,
+            policy_eval: guardEval, payload_hash: createHash('sha256').update(JSON.stringify({ response, governanceResult, outputGovernanceResult, escalationResult })).digest('hex'),
+          });
+          sendWebhook(config.webhookConfig, 'policy_violation', { agent_id: resolvedAgentId, action, resource, reason: guardEval.reason });
+          return reply.code(403).send({ verified: false, grounding: groundingResult, guard: guardEval, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, error: 'Action blocked by guard policy' });
+        }
       } else if (agent_id) {
         guardEval = config.guardEngine.evaluate(action, resource, agent_id);
-        if (!guardEval.allowed) return reply.code(403).send({ verified: false, grounding: groundingResult, guard: guardEval, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, error: 'Action blocked by guard policy' });
+        if (!guardEval.allowed) {
+          sendWebhook(config.webhookConfig, 'policy_violation', { agent_id, action, resource, reason: guardEval.reason });
+          return reply.code(403).send({ verified: false, grounding: groundingResult, guard: guardEval, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, error: 'Action blocked by guard policy' });
+        }
       }
     }
 
@@ -326,7 +344,16 @@ export async function createApp(config: ProxyConfig) {
         }
       }
       if (escalationResult.action === 'block') {
+        sendWebhook(config.webhookConfig, 'escalation_blocked', { action, resource, agent_id: agent_id ?? 'unknown', message: escalationResult.message ?? 'Blocked by escalation' });
         return { verified: false, response: finalResponse, grounding: groundingResult, guard: { allowed: true, reason: 'Blocked by escalation' }, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, audit_id: null };
+      }
+    }
+
+    // 5b. Webhook: high hallucination
+    if (groundingResult?.hallucination_score && config.webhookConfig && config.webhookConfig.events.includes('high_hallucination')) {
+      const threshold = config.webhookConfig.hallucinationThreshold ?? 0.5;
+      if (groundingResult.hallucination_score >= threshold) {
+        sendWebhook(config.webhookConfig, 'high_hallucination', { action, resource, agent_id: agent_id ?? 'unknown', hallucination_score: groundingResult.hallucination_score, total_claims: groundingResult.claims.length, unsupported_claims: groundingResult.claims.filter(c => !c.supported).length });
       }
     }
 
@@ -347,7 +374,10 @@ export async function createApp(config: ProxyConfig) {
       }); auditId = entry.audit_id;
     }
 
-    if (!guardEval.allowed) return reply.code(403).send({ verified: false, response: finalResponse, grounding: groundingResult, guard: guardEval, audit_id: auditId, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult });
+    if (!guardEval.allowed) {
+      sendWebhook(config.webhookConfig, 'policy_violation', { agent_id: resolvedAgentId, action, resource, reason: guardEval.reason });
+      return reply.code(403).send({ verified: false, response: finalResponse, grounding: groundingResult, guard: guardEval, audit_id: auditId, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult });
+    }
 
     return {
       verified: true, response: finalResponse, grounding: groundingResult, guard: guardEval, governance: governanceResult, output_governance: outputGovernanceResult, escalation: escalationResult, audit_id: auditId,

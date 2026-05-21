@@ -32,6 +32,9 @@ services:
       - AUDIT_DB_PATH=${AUDIT_DB_PATH:-/data/audit.db}
       - GUARD_DB_PATH=${GUARD_DB_PATH:-/data/guard.json}
       - DEFAULT_AGENT_ID=${DEFAULT_AGENT_ID:-default}
+      - WEBHOOK_URL=${WEBHOOK_URL:-}
+      - WEBHOOK_EVENTS=${WEBHOOK_EVENTS:-policy_violation,escalation_blocked,high_hallucination}
+      - WEBHOOK_HALLUCINATION_THRESHOLD=${WEBHOOK_HALLUCINATION_THRESHOLD:-0.5}
     volumes:
       - audit-data:/data
     depends_on:
