@@ -3,7 +3,7 @@
 **Trust layer for enterprise AI.** Verifies LLM outputs are grounded in real data and ensures agent actions stay within policy.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-78-passing-green.svg)](https://github.com/Manasverma-code/Ground-Keeps/actions)
+[![Tests](https://img.shields.io/badge/tests-78-passing-green.svg)](https://github.com/Manasverma-code/groundkeeps/actions)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-blue.svg)](package.json)
 [![Vercel](https://img.shields.io/badge/landing%20page-live-8B6F4E.svg)](https://groundkeeps.vercel.app)
 [![PRs](https://img.shields.io/badge/PRs-welcome-8B6F4E.svg)](CONTRIBUTING.md)
@@ -40,7 +40,7 @@ Your App → Trust Proxy → LLM Provider (OpenAI, Anthropic, Ollama, etc.)
 ## Quick Start
 
 ```bash
-git clone https://github.com/Manasverma-code/Ground-Keeps.git
+git clone https://github.com/Manasverma-code/groundkeeps.git
 cd groundkeeps
 docker compose up --build
 ```
