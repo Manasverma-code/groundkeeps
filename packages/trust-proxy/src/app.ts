@@ -147,7 +147,7 @@ export async function createApp(config: ProxyConfig) {
   // ── Health (public) ──────────────────────────────
   app.get('/health', async () => ({
     status: 'ok',
-    service: 'ground-keeps',
+    service: 'groundkeeps',
     version: '0.1.0',
     auth: config.apiKey ? 'required' : 'disabled',
     engines: {

@@ -241,7 +241,7 @@ const DATASET = [
 const HALLUCINATION_THRESHOLD = 0.3; // Score above this = flagged as hallucination
 
 async function main() {
-  console.log(`\n${BOLD}Ground-Keeps — Hallucination Detection FPR/FNR Benchmark${RESET}\n`);
+  console.log(`\n${BOLD}groundkeeps — Hallucination Detection FPR/FNR Benchmark${RESET}\n`);
 
   const verifierConfig = providerFromEnv('VERIFIER_LLM');
   console.log(`Verifier LLM: ${CYAN}${verifierConfig.name}${RESET} (${verifierConfig.defaultModel})`);

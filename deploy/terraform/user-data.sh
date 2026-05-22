@@ -17,8 +17,8 @@ systemctl start docker
 
 # Clone and configure
 cd /opt
-git clone https://github.com/Manasverma-code/Ground-Keeps.git ground-keeps
-cd ground-keeps
+git clone https://github.com/Manasverma-code/Ground-Keeps.git groundkeeps
+cd groundkeeps
 
 # Create .env file
 cat > .env << EOF
@@ -39,4 +39,4 @@ EOF
 docker compose -f docker-compose.prod.yml up -d
 
 # Setup auto-restart
-echo "0 3 * * * cd /opt/ground-keeps && docker compose pull && docker compose up -d" | crontab -
+echo "0 3 * * * cd /opt/groundkeeps && docker compose pull && docker compose up -d" | crontab -

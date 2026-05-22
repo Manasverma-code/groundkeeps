@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Ground-Keeps Production Deploy — One-command setup
+# groundkeeps Production Deploy — One-command setup
 # Usage: bash scripts/deploy.sh
 set -e
 
@@ -13,7 +13,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 echo -e "${CYAN}╔══════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║   Ground-Keeps Production Deploy     ║${NC}"
+echo -e "${CYAN}║   groundkeeps Production Deploy     ║${NC}"
 echo -e "${CYAN}╚══════════════════════════════════════╝${NC}"
 echo ""
 
@@ -33,7 +33,7 @@ fi
 echo -e "${YELLOW}We'll need a few things to set up your production server.${NC}"
 echo ""
 
-read -p "Enter your domain (e.g., api.ground-keeps.com): " DOMAIN
+read -p "Enter your domain (e.g., api.groundkeeps.com): " DOMAIN
 read -p "Enter your email (for Let's Encrypt): " EMAIL
 
 # Generate a strong API key

@@ -1,4 +1,4 @@
-# Ground-Keeps — Progress Report
+# groundkeeps — Progress Report
 
 ## Built ✅
 
@@ -89,7 +89,7 @@
 | Performance benchmarks | ✅ | Guard eval p95 <0.01ms (target: <200ms) |
 | MIT License | ✅ | |
 | CONTRIBUTING.md | ✅ | |
-| Landing page | ✅ | Deployed on Vercel: `ground-keeps.vercel.app` |
+| Landing page | ✅ | Deployed on Vercel: `groundkeeps.vercel.app` |
 | Repository badges | ✅ | License, tests, Node version, Vercel |
 
 ### Dashboard (MVP Complete)

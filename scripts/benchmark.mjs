@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Ground-Keeps Performance Benchmarks
+ * groundkeeps Performance Benchmarks
  * Validates against PRD targets:
  *   - Guard evaluation: <200ms
  *   - Hallucination FPR: <5%
@@ -40,7 +40,7 @@ async function measure(label, fn, iterations = 100) {
 async function main() {
   W.write('\n');
   W.write('  ╔══════════════════════════════════════════════════════════╗\n');
-  W.write('  ║            Ground-Keeps Performance Benchmarks           ║\n');
+  W.write('  ║            groundkeeps Performance Benchmarks           ║\n');
   W.write('  ╚══════════════════════════════════════════════════════════╝\n\n');
 
   // ── 1. Guard Engine Latency ─────────────────────
