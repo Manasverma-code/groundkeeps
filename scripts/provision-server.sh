@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Provision a fresh Ubuntu server with Docker and deploy groundkeeps
 # Usage: Run this on a new Ubuntu 22.04+ VPS as root
-#   curl -fsSL https://raw.githubusercontent.com/Manasverma-code/groundkeeps/main/scripts/provision-server.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/Manasverma-code/Ground-Keeps/main/scripts/provision-server.sh | bash
 set -e
 
 GREEN='\033[0;32m'
@@ -30,7 +30,7 @@ apt-get install -y -qq git curl openssl jq
 # Clone the repo
 if [ ! -d /opt/groundkeeps ]; then
   echo -e "${GREEN}Cloning groundkeeps...${NC}"
-  git clone https://github.com/Manasverma-code/groundkeeps.git /opt/groundkeeps
+  git clone https://github.com/Manasverma-code/Ground-Keeps.git /opt/groundkeeps
 fi
 
 cd /opt/groundkeeps

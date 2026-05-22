@@ -17,7 +17,7 @@ systemctl start docker
 
 # Clone and configure
 cd /opt
-git clone https://github.com/Manasverma-code/groundkeeps.git groundkeeps
+git clone https://github.com/Manasverma-code/Ground-Keeps.git groundkeeps
 cd groundkeeps
 
 # Create .env file
