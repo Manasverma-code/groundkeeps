@@ -5,7 +5,7 @@ Thanks for your interest in groundkeeps!
 ## Getting Started
 
 ```bash
-git clone https://github.com/Manasverma-code/Ground-Keeps.git
+git clone https://github.com/Manasverma-code/groundkeeps.git
 cd groundkeeps
 npm install
 npm run build
