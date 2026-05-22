@@ -35,7 +35,7 @@ if [ -z "$PROXY_API_KEY" ] || [ "$PROXY_API_KEY" = "gk_change_this_to_a_random_k
   exit 1
 fi
 
-echo "🚀 Deploying groundkeeps to $DOMAIN..."
+echo "🚀 Deploying Ground-Keeps to $DOMAIN..."
 echo ""
 
 # Start Caddy first to provision certificates
@@ -44,7 +44,7 @@ docker compose -f docker-compose.prod.yml up -d caddy
 sleep 5
 
 # Start the rest of the stack
-echo "🛡️  Starting groundkeeps..."
+echo "🛡️  Starting Ground-Keeps..."
 docker compose -f docker-compose.prod.yml up -d trust-proxy
 
 echo ""

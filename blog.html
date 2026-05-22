@@ -3,136 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Blog — groundkeeps</title>
-  <meta name="description" content="groundkeeps blog — building trust infrastructure for enterprise AI." />
+  <title>Blog — Ground-Keeps</title>
+  <meta name="description" content="Ground-Keeps blog — building trust infrastructure for enterprise AI." />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-      background: #ffffff; color: #1d1d1f; line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #faf8f5; color: #2c2c2e; line-height: 1.6;
     }
-
-    .global-nav {
-      height: 44px; background: #000000;
-      display: flex; align-items: center; justify-content: center;
+    .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+    header {
+      padding: 24px 0; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid #eeeae5;
     }
-    .global-nav .inner {
-      width: 100%; max-width: 1068px; padding: 0 22px;
-      display: flex; align-items: center; justify-content: space-between;
+    header h1 { font-size: 18px; font-weight: 700; color: #8b6f4e; letter-spacing: -0.3px; }
+    header h1 a { color: #8b6f4e; text-decoration: none; }
+    header nav a {
+      color: #8a8a8e; margin-left: 24px; text-decoration: none; font-size: 14px; font-weight: 500;
     }
-    .global-nav .logo {
-      font-size: 12px; font-weight: 400; letter-spacing: -0.12px;
-      color: #ffffff; text-decoration: none;
+    header nav a:hover { color: #5c3d2e; }
+    header nav a.active { color: #5c3d2e; }
+    .page { padding: 60px 0 80px; }
+    .page h2 { font-size: 36px; color: #1a1a1c; margin-bottom: 8px; letter-spacing: -1px; }
+    .page .subtitle { color: #6a6a6e; font-size: 16px; margin-bottom: 40px; }
+    .post {
+      background: #fff; border: 1px solid #ede8e3; border-radius: 12px; padding: 28px; margin-bottom: 20px;
+      transition: box-shadow 0.2s;
     }
-    .global-nav .links { display: flex; gap: 28px; }
-    .global-nav .links a {
-      font-size: 12px; font-weight: 400; letter-spacing: -0.12px;
-      color: #cccccc; text-decoration: none; transition: color 0.15s;
-    }
-    .global-nav .links a:hover, .global-nav .links a.active { color: #ffffff; }
-
-    .tile { padding: 80px 0; }
-    .tile-white { background: #ffffff; }
-    .tile .inner { max-width: 680px; margin: 0 auto; padding: 0 24px; }
-
-    .display-lg {
-      font-size: 40px; font-weight: 600; line-height: 1.1;
-      letter-spacing: 0; color: #1d1d1f; margin-bottom: 8px;
-    }
-    .body-muted {
-      font-size: 17px; font-weight: 400; line-height: 1.47;
-      letter-spacing: -0.374px; color: #7a7a7a; margin-bottom: 40px;
-    }
-
-    .post { padding: 20px 0; border-bottom: 1px solid #e0e0e0; }
-    .post:last-of-type { border-bottom: none; }
-    .post .date {
-      font-size: 14px; font-weight: 400; line-height: 1.43;
-      letter-spacing: -0.224px; color: #7a7a7a; margin-bottom: 2px;
-    }
-    .post h3 {
-      font-size: 21px; font-weight: 700; line-height: 1.19;
-      letter-spacing: 0.231px; color: #1d1d1f; margin-bottom: 4px;
-    }
-    .post h3 a { color: #1d1d1f; text-decoration: none; }
-    .post h3 a:hover { color: #0066cc; }
-    .post p {
-      font-size: 17px; font-weight: 400; line-height: 1.47;
-      letter-spacing: -0.374px; color: #7a7a7a; margin-bottom: 8px;
-    }
+    .post:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    .post .date { font-size: 12px; color: #b8b8be; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .post h3 { font-size: 20px; color: #1a1a1c; margin-bottom: 8px; }
+    .post h3 a { color: #1a1a1c; text-decoration: none; }
+    .post h3 a:hover { color: #8b6f4e; }
+    .post p { font-size: 14px; color: #6a6a6e; margin-bottom: 12px; }
     .post .tags { display: flex; gap: 8px; flex-wrap: wrap; }
     .post .tags span {
-      font-size: 12px; font-weight: 400; letter-spacing: -0.12px;
-      color: #7a7a7a; border: 1px solid #e0e0e0; border-radius: 5px;
-      padding: 2px 10px;
+      background: #f5f1ec; border: 1px solid #ede8e3; border-radius: 6px;
+      padding: 2px 10px; font-size: 11px; color: #8a8a8e;
     }
-
-    .empty { text-align: center; padding: 40px 0; }
-    .empty p {
-      font-size: 17px; font-weight: 400; line-height: 1.47;
-      letter-spacing: -0.374px; color: #7a7a7a;
+    .post a { color: #8b6f4e; text-decoration: none; font-size: 14px; font-weight: 500; }
+    .post a:hover { text-decoration: underline; }
+    .coming-soon {
+      text-align: center; padding: 60px 0; color: #b8b8be;
     }
-    .empty a {
-      font-size: 17px; font-weight: 400; line-height: 1.47;
-      letter-spacing: -0.374px; color: #0066cc; text-decoration: none;
-    }
-    .empty a:hover { text-decoration: underline; }
-
-    footer {
-      background: #f5f5f7; padding: 48px 0 32px;
-    }
-    footer .inner { max-width: 980px; margin: 0 auto; padding: 0 24px; }
-    footer .links-row {
-      display: flex; gap: 64px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px;
-    }
-    footer .col h5 {
-      font-size: 12px; font-weight: 400; letter-spacing: -0.12px; color: #1d1d1f; margin-bottom: 8px;
-    }
-    footer .col a {
-      display: block; font-size: 12px; font-weight: 400; letter-spacing: -0.12px;
-      color: #7a7a7a; text-decoration: none; line-height: 2;
-    }
-    footer .col a:hover { color: #0066cc; }
-    footer .legal {
-      text-align: center; font-size: 12px; font-weight: 400; letter-spacing: -0.12px;
-      color: #7a7a7a; border-top: 1px solid #e0e0e0; padding-top: 20px;
-    }
-
-    @media (max-width: 834px) {
-      .tile { padding: 48px 0; }
-      .display-lg { font-size: 34px; letter-spacing: -0.374px; }
-      .global-nav .links { gap: 16px; }
-      .global-nav .links a { font-size: 11px; }
+    .coming-soon .icon { font-size: 48px; margin-bottom: 16px; display: block; }
+    footer { padding: 32px 0; text-align: center; font-size: 13px; color: #b8b8be; border-top: 1px solid #eeeae5; }
+    @media (max-width: 640px) {
+      .page h2 { font-size: 28px; }
+      header nav a { margin-left: 16px; font-size: 13px; }
     }
   </style>
 </head>
 <body>
-
-  <div class="global-nav">
-    <div class="inner">
-      <a href="/" class="logo">groundkeeps</a>
-      <div class="links">
+  <div class="container">
+    <header>
+      <h1><a href="/">Ground-Keeps</a></h1>
+      <nav>
         <a href="/about.html">About</a>
         <a href="/pricing.html">Pricing</a>
-        <a href="/blog.html" class="active">Blog</a>
-      </div>
-    </div>
+        <a href="/blog.html">Blog</a>
+        <a href="https://github.com/Manasverma-code/Ground-Keeps">GitHub</a>
+        <a href="https://github.com/Manasverma-code/Ground-Keeps/blob/main/docs/INTEGRATION.md">Docs</a>
+      </nav>
+    </header>
   </div>
 
-  <div class="tile tile-white">
-    <div class="inner">
-      <h1 class="display-lg">Blog</h1>
-      <p class="body-muted">Thoughts on building trustworthy AI infrastructure.</p>
+  <section class="page">
+    <div class="container">
+      <h2>Blog</h2>
+      <p class="subtitle">Thoughts on building trustworthy AI infrastructure.</p>
 
       <div class="post">
         <div class="date">May 17, 2026</div>
-        <h3><a href="https://github.com/Manasverma-code/Ground-Keeps">groundkeeps is Live</a></h3>
-        <p>Announcing groundkeeps — open-source middleware that verifies every LLM output against real data and ensures every agent action stays within policy.</p>
+        <h3><a href="https://github.com/Manasverma-code/Ground-Keeps">Ground-Keeps is Live</a></h3>
+        <p>Announcing Ground-Keeps — open-source middleware that verifies every LLM output against real data and ensures every agent action stays within policy. MIT-licensed, self-hosted, provider-agnostic.</p>
         <div class="tags">
           <span>announcement</span>
           <span>open-source</span>
@@ -143,7 +88,7 @@
       <div class="post">
         <div class="date">May 15, 2026</div>
         <h3><a href="https://github.com/Manasverma-code/Ground-Keeps/blob/main/PRD.md">Why Reasoning Beats Embeddings for Hallucination Detection</a></h3>
-        <p>Embedding-based hallucination detection has a near-100% false positive rate. Here's why reasoning-based verification is the only viable path for production AI systems.</p>
+        <p>Embedding-based hallucination detection has a near-100% false positive rate. Here's why reasoning-based verification is the only viable path for production AI systems that need to be trustworthy.</p>
         <div class="tags">
           <span>hallucination detection</span>
           <span>grounding</span>
@@ -151,26 +96,17 @@
         </div>
       </div>
 
-      <div class="empty">
-        <p>More posts coming soon.</p>
+      <div class="coming-soon">
+        <span class="icon">📝</span>
+        <p>More posts coming soon. Follow us on GitHub for updates.</p>
+        <br>
+        <a href="https://github.com/Manasverma-code/Ground-Keeps" style="color:#8b6f4e;font-weight:600;text-decoration:none">Star on GitHub →</a>
       </div>
     </div>
-  </div>
+  </section>
 
   <footer>
-    <div class="inner">
-      <div class="links-row">
-        <div class="col">
-          <h5>Stack</h5>
-          <a>Node.js + TypeScript</a>
-          <a>Fastify</a>
-          <a>React + Recharts</a>
-          <a>Docker</a>
-        </div>
-      </div>
-      <div class="legal">groundkeeps.in — Open-source trust layer for enterprise AI. MIT-licensed.</div>
-    </div>
+    <p>groundkeeps.in — Open-source trust layer for enterprise AI.</p>
   </footer>
-
 </body>
 </html>

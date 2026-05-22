@@ -32,7 +32,7 @@ export function Layout({ children, onLogout }: { children: ReactNode; onLogout?:
       <nav className="sidebar">
         <div className="sidebar-brand">
           <ShieldIcon />
-          <span>groundkeeps</span>
+          <span>Ground-Keeps</span>
         </div>
 
         <div className="sidebar-nav">

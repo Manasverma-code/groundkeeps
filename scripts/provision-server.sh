@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Provision a fresh Ubuntu server with Docker and deploy groundkeeps
+# Provision a fresh Ubuntu server with Docker and deploy Ground-Keeps
 # Usage: Run this on a new Ubuntu 22.04+ VPS as root
 #   curl -fsSL https://raw.githubusercontent.com/Manasverma-code/Ground-Keeps/main/scripts/provision-server.sh | bash
 set -e
@@ -8,7 +8,7 @@ GREEN='\033[0;32m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-echo -e "${CYAN}Provisioning server for groundkeeps...${NC}"
+echo -e "${CYAN}Provisioning server for Ground-Keeps...${NC}"
 
 # Update system
 apt-get update -qq
@@ -28,18 +28,18 @@ apt-get install -y -qq docker-compose-plugin
 apt-get install -y -qq git curl openssl jq
 
 # Clone the repo
-if [ ! -d /opt/groundkeeps ]; then
-  echo -e "${GREEN}Cloning groundkeeps...${NC}"
-  git clone https://github.com/Manasverma-code/Ground-Keeps.git /opt/groundkeeps
+if [ ! -d /opt/ground-keeps ]; then
+  echo -e "${GREEN}Cloning Ground-Keeps...${NC}"
+  git clone https://github.com/Manasverma-code/Ground-Keeps.git /opt/ground-keeps
 fi
 
-cd /opt/groundkeeps
+cd /opt/ground-keeps
 
 echo ""
 echo -e "${GREEN}✅ Server provisioned!${NC}"
 echo ""
 echo "Next steps:"
-echo "  1. cd /opt/groundkeeps"
+echo "  1. cd /opt/ground-keeps"
 echo "  2. bash scripts/deploy.sh"
 echo ""
 echo "The deploy script will ask you for your domain and API keys."

@@ -1,4 +1,4 @@
-# groundkeeps Production — Caddy configuration
+# Ground-Keeps Production — Caddy configuration
 # Auto-provisions HTTPS via Let's Encrypt
 # Replace YOUR_DOMAIN with your actual domain
 

@@ -3,180 +3,134 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pricing — groundkeeps</title>
-  <meta name="description" content="groundkeeps pricing — free self-hosted open-source or enterprise managed." />
+  <title>Pricing — Ground-Keeps</title>
+  <meta name="description" content="Ground-Keeps pricing — free self-hosted open-source or enterprise managed." />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-      background: #ffffff; color: #1d1d1f; line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #faf8f5; color: #2c2c2e; line-height: 1.6;
     }
-
-    .global-nav {
-      height: 44px; background: #000000;
-      display: flex; align-items: center; justify-content: center;
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+    header {
+      padding: 24px 0; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid #eeeae5;
     }
-    .global-nav .inner {
-      width: 100%; max-width: 1068px; padding: 0 22px;
-      display: flex; align-items: center; justify-content: space-between;
+    header h1 { font-size: 18px; font-weight: 700; color: #8b6f4e; letter-spacing: -0.3px; }
+    header h1 a { color: #8b6f4e; text-decoration: none; }
+    header nav a {
+      color: #8a8a8e; margin-left: 24px; text-decoration: none; font-size: 14px; font-weight: 500;
     }
-    .global-nav .logo {
-      font-size: 12px; font-weight: 400; letter-spacing: -0.12px;
-      color: #ffffff; text-decoration: none;
-    }
-    .global-nav .links { display: flex; gap: 28px; }
-    .global-nav .links a {
-      font-size: 12px; font-weight: 400; letter-spacing: -0.12px;
-      color: #cccccc; text-decoration: none; transition: color 0.15s;
-    }
-    .global-nav .links a:hover, .global-nav .links a.active { color: #ffffff; }
-
-    .tile { padding: 80px 0; }
-    .tile-white { background: #ffffff; }
-    .tile-parchment { background: #f5f5f7; }
-    .tile-dark { background: #272729; }
-    .tile .inner { max-width: 900px; margin: 0 auto; padding: 0 24px; }
-
-    .display-lg {
-      font-size: 40px; font-weight: 600; line-height: 1.1;
-      letter-spacing: 0; color: #1d1d1f; text-align: center; margin-bottom: 8px;
-    }
-    .body-muted {
-      font-size: 17px; font-weight: 400; line-height: 1.47;
-      letter-spacing: -0.374px; color: #7a7a7a; text-align: center; margin-bottom: 40px;
-    }
-
-    .plan-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 1px; background: #e0e0e0;
-      border-radius: 18px; overflow: hidden;
-    }
+    header nav a:hover { color: #5c3d2e; }
+    header nav a.active { color: #5c3d2e; }
+    .page { padding: 60px 0 80px; }
+    .page h2 { font-size: 36px; color: #1a1a1c; text-align: center; margin-bottom: 8px; letter-spacing: -1px; }
+    .page .subtitle { text-align: center; color: #6a6a6e; font-size: 16px; margin-bottom: 48px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; align-items: start; }
     .plan {
-      background: #ffffff; padding: 32px 24px;
-      display: flex; flex-direction: column;
+      background: #fff; border: 1px solid #ede8e3; border-radius: 16px; padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: box-shadow 0.2s;
     }
-    .plan.featured { background: #f5f5f7; }
+    .plan:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .plan.featured {
+      border-color: #c4a882; box-shadow: 0 0 0 2px #c4a882, 0 8px 24px rgba(0,0,0,0.08);
+      transform: scale(1.02); position: relative;
+    }
     .plan .badge {
-      font-size: 12px; font-weight: 400; letter-spacing: -0.12px;
-      color: #0066cc; text-transform: uppercase; margin-bottom: 4px;
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: #8b6f4e; color: #fff; padding: 4px 16px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
     }
-    .plan h3 {
-      font-size: 21px; font-weight: 700; line-height: 1.19;
-      letter-spacing: 0.231px; color: #1d1d1f; margin-bottom: 4px;
-    }
-    .plan .price {
-      font-size: 34px; font-weight: 600; line-height: 1.47;
-      letter-spacing: -0.374px; color: #1d1d1f; margin: 8px 0;
-    }
-    .plan .price .sub {
-      font-size: 17px; font-weight: 400; color: #7a7a7a;
-    }
-    .plan .desc {
-      font-size: 14px; font-weight: 400; line-height: 1.43;
-      letter-spacing: -0.224px; color: #7a7a7a; margin-bottom: 20px;
-    }
-    .plan ul { list-style: none; padding: 0; margin: 0 0 24px; flex: 1; }
-    .plan ul li {
-      padding: 4px 0;
-      font-size: 14px; font-weight: 400; line-height: 1.43;
-      letter-spacing: -0.224px; color: #1d1d1f;
-    }
-    .plan ul li::before { content: ""; }
-    .plan ul li strong { font-weight: 600; }
-
-    .btn {
-      display: block; text-align: center; padding: 11px 22px; border-radius: 9999px;
-      font-size: 17px; font-weight: 400; line-height: 1.47;
-      letter-spacing: -0.374px; text-decoration: none;
-      transition: opacity 0.15s; cursor: pointer;
-    }
-    .btn:active { transform: scale(0.95); }
-    .btn-primary { background: #0066cc; color: #ffffff; }
-    .btn-secondary { background: transparent; color: #0066cc; border: 1px solid #0066cc; }
+    .plan h3 { font-size: 20px; color: #1a1a1c; margin-bottom: 4px; }
+    .plan .price { font-size: 40px; font-weight: 800; color: #1a1a1c; margin: 16px 0; }
+    .plan .price span { font-size: 16px; font-weight: 400; color: #8a8a8e; }
+    .price-dual { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .price-option { display: flex; flex-direction: column; align-items: center; line-height: 1.2; }
+    .price-option .currency { font-size: 32px; font-weight: 800; color: #1a1a1c; }
+    .price-option .price-label { font-size: 11px; font-weight: 500; color: #8a8a8e; text-transform: uppercase; letter-spacing: 0.5px; }
+    .price-or { font-size: 12px; color: #b0b0b4; font-weight: 500; }
+    .plan p { color: #6a6a6e; font-size: 14px; margin-bottom: 20px; }
+    .plan ul { list-style: none; padding: 0; margin: 0 0 24px; }
+    .plan ul li { padding: 6px 0; font-size: 14px; color: #4a4a4e; }
+    .plan ul li::before { content: "✓ "; color: #7a9e7e; font-weight: 700; }
     .btn-group { display: flex; gap: 8px; }
     .btn-group .btn { flex: 1; }
-
-    .faq { max-width: 640px; margin: 48px auto 0; }
-    .faq .faq-label {
-      font-size: 12px; font-weight: 400; letter-spacing: -0.12px;
-      color: #7a7a7a; text-transform: uppercase; text-align: center; margin-bottom: 20px;
+    .btn {
+      display: block; text-align: center; background: #8b6f4e; color: #fff;
+      padding: 12px 24px; border-radius: 10px; text-decoration: none;
+      font-weight: 600; font-size: 14px; transition: background 0.15s;
     }
-    .faq-item { margin-bottom: 16px; }
-    .faq-item h4 {
-      font-size: 17px; font-weight: 600; line-height: 1.24;
-      letter-spacing: -0.374px; color: #1d1d1f; margin-bottom: 2px;
+    .btn-sm { padding: 10px 12px; font-size: 13px; }
+    .btn:hover { background: #7a5f42; }
+    .btn-outline {
+      background: transparent; border: 1px solid #d4cdc6; color: #4a4a4e;
     }
-    .faq-item p {
-      font-size: 14px; font-weight: 400; line-height: 1.43;
-      letter-spacing: -0.224px; color: #7a7a7a;
-    }
-
-    footer {
-      background: #f5f5f7; padding: 48px 0 32px;
-    }
-    footer .inner { max-width: 980px; margin: 0 auto; padding: 0 24px; }
-    footer .legal {
-      text-align: center;
-      font-size: 12px; font-weight: 400; letter-spacing: -0.12px;
-      color: #7a7a7a; padding-top: 20px;
-    }
-
-    @media (max-width: 834px) {
-      .tile { padding: 48px 0; }
-      .display-lg { font-size: 34px; letter-spacing: -0.374px; }
-      .plan-grid { grid-template-columns: 1fr; }
-      .global-nav .links { gap: 16px; }
-      .global-nav .links a { font-size: 11px; }
+    .btn-outline:hover { background: #f8f6f3; border-color: #c4a882; }
+    .faq { margin-top: 60px; }
+    .faq h3 { font-size: 24px; text-align: center; margin-bottom: 24px; }
+    .faq-item { margin-bottom: 20px; }
+    .faq-item h4 { font-size: 16px; color: #1a1a1c; margin-bottom: 4px; }
+    .faq-item p { font-size: 14px; color: #6a6a6e; }
+    footer { padding: 32px 0; text-align: center; font-size: 13px; color: #b8b8be; border-top: 1px solid #eeeae5; }
+    @media (max-width: 640px) {
+      .page h2 { font-size: 28px; }
+      header nav a { margin-left: 16px; font-size: 13px; }
+      .plan.featured { transform: none; }
     }
   </style>
 </head>
 <body>
-
-  <div class="global-nav">
-    <div class="inner">
-      <a href="/" class="logo">groundkeeps</a>
-      <div class="links">
+  <div class="container">
+    <header>
+      <h1><a href="/">Ground-Keeps</a></h1>
+      <nav>
         <a href="/about.html">About</a>
-        <a href="/pricing.html" class="active">Pricing</a>
+        <a href="/pricing.html">Pricing</a>
         <a href="/blog.html">Blog</a>
-      </div>
-    </div>
+        <a href="https://github.com/Manasverma-code/Ground-Keeps">GitHub</a>
+        <a href="https://github.com/Manasverma-code/Ground-Keeps/blob/main/docs/INTEGRATION.md">Docs</a>
+      </nav>
+    </header>
   </div>
 
-  <!-- ─── Tile 1: Parchment — Pricing ─── -->
-  <div class="tile tile-parchment">
-    <div class="inner">
-      <h1 class="display-lg">Simple Pricing</h1>
-      <p class="body-muted">Start free. Scale when you need to.</p>
+  <section class="page">
+    <div class="container">
+      <h2>Simple Pricing</h2>
+      <p class="subtitle">Start free. Scale when you need to.</p>
 
-      <div class="plan-grid">
+      <div class="pricing-grid">
         <div class="plan">
-          <div class="badge">&nbsp;</div>
           <h3>Self-Hosted</h3>
           <div class="price">Free</div>
-          <p class="desc">Open-source with rate limits. Run on your own infrastructure.</p>
+          <p>Open-source with rate limits. Run on your own infrastructure.</p>
           <ul>
             <li>Full grounding &amp; guard engine</li>
-            <li>SHA-256 audit store</li>
+            <li>Audit store with SHA-256 chains</li>
             <li>React dashboard</li>
             <li><strong>5,000</strong> verifications / month</li>
             <li><strong>2</strong> agents</li>
             <li><strong>15-day</strong> audit retention</li>
             <li>Community support (GitHub)</li>
           </ul>
-          <a class="btn btn-secondary" href="https://github.com/Manasverma-code/Ground-Keeps">Self-Host →</a>
+          <a class="btn" href="https://github.com/Manasverma-code/Ground-Keeps">Self-Host Now →</a>
         </div>
 
         <div class="plan featured">
-          <div class="badge">Popular</div>
+          <span class="badge">POPULAR</span>
           <h3>Self-Hosted Pro</h3>
-          <div class="price">$99 <span class="sub">/ month</span></div>
-          <p class="desc">Unlimited self-hosted for production. Same infra, no caps.</p>
+          <div class="price price-dual">
+            <span class="price-option">
+              <span class="currency">$99</span>
+              <span class="price-label">International</span>
+            </span>
+            <span class="price-or">or</span>
+            <span class="price-option">
+              <span class="currency">₹8,499</span>
+              <span class="price-label">India</span>
+            </span>
+          </div>
+          <p>Unlimited self-hosted for production use. Same infra, no caps.</p>
           <ul>
             <li>Unlimited verifications</li>
             <li>Unlimited agents</li>
@@ -186,51 +140,52 @@
             <li>Email support</li>
           </ul>
           <div class="btn-group">
-            <a class="btn btn-primary" href="PAYMENT_LINK_99">$99/mo</a>
-            <a class="btn btn-secondary" href="https://rzp.io/rzp/UkBhJufz">₹8,499/mo</a>
+            <a class="btn btn-sm" href="PAYMENT_LINK_99">Buy $99/mo →</a>
+            <a class="btn btn-sm" href="https://rzp.io/rzp/UkBhJufz">Buy ₹8,499/mo →</a>
           </div>
         </div>
 
+
         <div class="plan">
-          <div class="badge">&nbsp;</div>
           <h3>Enterprise</h3>
           <div class="price">Custom</div>
-          <p class="desc">On-prem deployment, SSO, compliance, dedicated support.</p>
+          <p>On-prem deployment, SSO, compliance, and dedicated support.</p>
           <ul>
-            <li>Everything in Pro</li>
-            <li>On-prem / air-gapped</li>
+            <li>Everything in Self-Hosted Pro</li>
+            <li>On-prem / air-gapped deployment</li>
             <li>SAML / SSO integration</li>
             <li>SOC 2 evidence reports</li>
             <li>Fine-tuned verification models</li>
             <li>Dedicated support engineer</li>
           </ul>
-          <a class="btn btn-secondary" href="mailto:hello@groundkeeps.in?subject=Enterprise%20Inquiry">Contact →</a>
+          <a class="btn btn-outline" href="mailto:hello@groundkeeps.in?subject=Enterprise%20Inquiry">Contact Us →</a>
         </div>
       </div>
 
       <div class="faq">
-        <div class="faq-label">Frequently Asked Questions</div>
+        <h3>Frequently Asked Questions</h3>
         <div class="faq-item">
-          <h4>What are the limits on the free version?</h4>
-          <p>5,000 verifications/month, 2 agents, 15-day audit retention. Upgrade to Pro for unlimited everything.</p>
+          <h4>What are the limits on the free self-hosted version?</h4>
+          <p>5,000 verifications per month, 2 agents, and 15-day audit retention. Upgrade to Self-Hosted Pro for unlimited everything.</p>
         </div>
         <div class="faq-item">
           <h4>How do you enforce limits on self-hosted?</h4>
-          <p>The proxy checks a local usage counter against the license key. Free tier runs fully offline — Pro needs occasional validation (30-day window).</p>
+          <p>The proxy periodically checks a local usage counter against the license key. Free tier runs fully offline — Pro tier needs occasional online validation but works offline for 30 days.</p>
         </div>
         <div class="faq-item">
-          <h4>Can I get a trial of Pro?</h4>
-          <p>The free tier gives you full access with rate limits. Upgrade anytime — no commitments.</p>
+          <h4>Does Self-Hosted Pro require an internet connection?</h4>
+          <p>It needs occasional online license validation — once every 30 days. The free tier runs fully offline.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Can I get a trial of Self-Hosted Pro?</h4>
+          <p>The free tier already gives you full access with rate limits. Upgrade anytime — no commitments.</p>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <footer>
-    <div class="inner">
-      <div class="legal">groundkeeps.in — Open-source trust layer for enterprise AI. MIT-licensed.</div>
-    </div>
+    <p>groundkeeps.in — Open-source trust layer for enterprise AI.</p>
   </footer>
-
 </body>
 </html>

@@ -1,4 +1,4 @@
-// groundkeeps: Full pipeline demo (no LLM required for governance parts)
+// Ground-Keeps: Full pipeline demo (no LLM required for governance parts)
 // Run: node demo-full-pipeline.mjs
 
 import { DocumentGovernanceEngine, OutputGovernanceEngine, EscalationEngine } from './packages/grounding-engine/dist/index.js';
