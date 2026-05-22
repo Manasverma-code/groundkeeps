@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Features — groundkeeps</title>
+  <meta name="description" content="groundkeeps features — grounding engine, guard engine, audit store, and more." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #faf8f5; color: #2c2c2e; line-height: 1.6;
+    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+    header {
+      padding: 24px 0; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid #eeeae5;
+    }
+    header h1 { font-size: 18px; font-weight: 700; color: #8b6f4e; letter-spacing: -0.3px; }
+    header h1 a { color: #8b6f4e; text-decoration: none; }
+    header nav a {
+      color: #8a8a8e; margin-left: 24px; text-decoration: none; font-size: 14px; font-weight: 500;
+    }
+    header nav a:hover { color: #5c3d2e; }
+    header nav a.active { color: #5c3d2e; }
+    .page { padding: 60px 0 80px; }
+    .page h2 { font-size: 36px; color: #1a1a1c; text-align: center; margin-bottom: 8px; letter-spacing: -1px; }
+    .page .subtitle { text-align: center; color: #6a6a6e; font-size: 16px; margin-bottom: 48px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .card {
+      background: #ffffff; border: 1px solid #ede8e3; border-radius: 12px;
+      padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: box-shadow 0.2s;
+    }
+    .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .card .icon { font-size: 32px; margin-bottom: 12px; display: block; }
+    .card h3 { font-size: 20px; color: #1a1a1c; margin-bottom: 8px; }
+    .card p { font-size: 14px; color: #6a6a6e; line-height: 1.7; margin-bottom: 12px; }
+    .card ul { list-style: none; padding: 0; }
+    .card ul li { padding: 4px 0; font-size: 13px; color: #4a4a4e; }
+    .card ul li::before { content: "✓ "; color: #7a9e7e; font-weight: 700; }
+    .btn {
+      display: inline-block; background: #8b6f4e; color: #fff;
+      padding: 12px 28px; border-radius: 10px; text-decoration: none;
+      font-weight: 600; font-size: 14px; transition: background 0.15s;
+    }
+    .btn:hover { background: #7a5f42; }
+    .btn-outline {
+      background: transparent; border: 1px solid #d4cdc6; color: #4a4a4e;
+    }
+    .btn-outline:hover { background: #f8f6f3; border-color: #c4a882; }
+    .cta-section {
+      margin-top: 60px; text-align: center; padding: 40px 0;
+      background: #ffffff; border: 1px solid #ede8e3; border-radius: 16px;
+    }
+    .cta-section h3 { font-size: 24px; color: #1a1a1c; margin-bottom: 8px; }
+    .cta-section p { color: #6a6a6e; margin-bottom: 24px; }
+    footer { padding: 32px 0; text-align: center; font-size: 13px; color: #b8b8be; border-top: 1px solid #eeeae5; }
+    @media (max-width: 640px) {
+      .page h2 { font-size: 28px; }
+      header nav a { margin-left: 16px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><a href="/">groundkeeps</a></h1>
+      <nav>
+        <a href="/features.html">Features</a>
+        <a href="/about.html">About</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/blog.html">Blog</a>
+      </nav>
+    </header>
+  </div>
+
+  <section class="page">
+    <div class="container">
+      <h2>Two Engines, One API</h2>
+      <p class="subtitle">Drop-in middleware for any LLM application. Five-minute integration.</p>
+
+      <div class="grid">
+        <div class="card">
+          <span class="icon">🔍</span>
+          <h3>Grounding Engine</h3>
+          <p>Real-time hallucination detection using reasoning-based verification — not embeddings. Extracts claims, cross-references sources, ranks by freshness and authority.</p>
+          <ul>
+            <li>Claim extraction from LLM responses</li>
+            <li>Multi-source cross-referencing</li>
+            <li>Freshness and authority ranking</li>
+            <li>Temporal consistency checks</li>
+            <li>Conflict resolution scoring</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="icon">🛡️</span>
+          <h3>Guard Engine</h3>
+          <p>JWT-based agent identity with scoped credentials. Declarative allow/deny policies using glob patterns. Real-time action verification before execution.</p>
+          <ul>
+            <li>JWT-based agent identity</li>
+            <li>Scoped credentials and roles</li>
+            <li>Declarative allow/deny policies</li>
+            <li>Glob pattern matching</li>
+            <li>Real-time action evaluation</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="icon">📋</span>
+          <h3>Audit Store</h3>
+          <p>Append-only WAL-based log with SHA-256 hash chain verification. Detect tampering instantly. Built for EU AI Act, HIPAA, and SOC 2 compliance.</p>
+          <ul>
+            <li>Append-only write-ahead log</li>
+            <li>SHA-256 hash chain integrity</li>
+            <li>Instant tamper detection</li>
+            <li>Configurable retention policies</li>
+            <li>Compliance-ready exports</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="icon">📊</span>
+          <h3>React Dashboard</h3>
+          <p>Real-time metrics, searchable audit log, agent and policy management. Monitor hallucination rates, blocked actions, and compliance status.</p>
+          <ul>
+            <li>Real-time metrics and charts</li>
+            <li>Searchable audit log viewer</li>
+            <li>Agent and policy management</li>
+            <li>Hallucination rate monitoring</li>
+            <li>Compliance status dashboard</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="icon">🔌</span>
+          <h3>Provider Agnostic</h3>
+          <p>Swap between OpenAI, Anthropic, Gemini, Groq, Ollama, and more via environment variables. Zero code changes. Supports cloud and local models.</p>
+          <ul>
+            <li>OpenAI, Anthropic, Gemini support</li>
+            <li>Groq, Ollama, DeepSeek support</li>
+            <li>Zero code changes to switch</li>
+            <li>Cloud and local model support</li>
+            <li>Unified API across providers</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="icon">🐳</span>
+          <h3>One-Command Deploy</h3>
+          <p>Docker Compose starts the entire stack in seconds. PowerShell and Bash launch scripts with automatic demo data seeding.</p>
+          <ul>
+            <li>Single docker compose up command</li>
+            <li>PowerShell and Bash launchers</li>
+            <li>Automatic demo data seeding</li>
+            <li>Health check endpoints</li>
+            <li>Prometheus metrics integration</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cta-section">
+        <h3>Ready to deploy?</h3>
+        <p>Open-source. MIT-licensed. Runs anywhere Docker does.</p>
+        <a class="btn" href="https://github.com/Manasverma-code/groundkeeps/blob/main/docs/INTEGRATION.md">Get Started →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>groundkeeps.in — Open-source trust layer for enterprise AI.</p>
+  </footer>
+</body>
+</html>
