@@ -77,7 +77,7 @@ export async function startProxy() {
 
   const port = parseInt(process.env['PROXY_PORT'] ?? '3000', 10);
   await app.listen({ port, host: '0.0.0.0' });
-  console.log(`\n  🛡️  Ground-Keeps running on http://localhost:${port}`);
+  console.log(`\n  🛡️  groundkeeps running on http://localhost:${port}`);
   console.log(`  📡 Target LLM:   ${targetConfig.name} (${targetConfig.defaultModel})`);
   console.log(`  🔍 Verifier LLM: ${verifierConfig.name} (${verifierConfig.defaultModel})`);
   console.log(`  🛡️  Guard Engine: enabled (${process.env['GUARD_DB_PATH'] ? 'persistent' : 'in-memory'})`);

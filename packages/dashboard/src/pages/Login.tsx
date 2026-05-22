@@ -30,7 +30,7 @@ export function Login({ onLogin }: { onLogin: (key: string) => void }) {
       <div className="login-card">
         <div className="login-brand">
           <ShieldIcon />
-          <h1>Ground-Keeps</h1>
+          <h1>groundkeeps</h1>
         </div>
         <p className="login-subtitle">Enter your proxy API key to access the dashboard</p>
         <form onSubmit={handleSubmit}>

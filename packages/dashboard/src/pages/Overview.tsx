@@ -39,7 +39,7 @@ export function Overview() {
     <div>
       <div className="header">
         <h1>Overview</h1>
-        <p>Real-time Ground-Keeps metrics</p>
+        <p>Real-time groundkeeps metrics</p>
       </div>
 
       <div className="cards">

@@ -82,8 +82,8 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_security_group" "proxy" {
-  name        = "ground-keeps-proxy"
-  description = "Ground-Keeps proxy security group"
+  name        = "groundkeeps-proxy"
+  description = "groundkeeps proxy security group"
 
   ingress {
     from_port   = 22
@@ -116,11 +116,10 @@ resource "aws_security_group" "proxy" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = { Name = "ground-keeps-proxy" }
-}
+  tags = { Name = "groundkeeps-proxy" }
 
 resource "aws_key_pair" "proxy" {
-  key_name   = "ground-keeps-proxy-key"
+  key_name   = "groundkeeps-proxy-key"
   public_key = var.ssh_public_key
 }
 
@@ -147,7 +146,7 @@ resource "aws_instance" "proxy" {
     email                  = var.email
   })
 
-  tags = { Name = "ground-keeps-proxy" }
+  tags = { Name = "groundkeeps-proxy" }
 }
 
 output "instance_ip" {

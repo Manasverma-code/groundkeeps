@@ -1,12 +1,12 @@
 # Contributing
 
-Thanks for your interest in Ground-Keeps!
+Thanks for your interest in groundkeeps!
 
 ## Getting Started
 
 ```bash
 git clone https://github.com/Manasverma-code/Ground-Keeps.git
-cd Ground-Keeps
+cd groundkeeps
 npm install
 npm run build
 npm test
