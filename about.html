@@ -3,73 +3,137 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About — groundkeeps</title>
-  <meta name="description" content="About groundkeeps: building trust infrastructure for enterprise AI." />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+  <title>About — GroundKeeps</title>
+  <meta name="description" content="About GroundKeeps: building trust infrastructure for enterprise AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a0a;
+      --surface: rgb(20,20,20);
+      --text-primary: #f5f5f5;
+      --text-secondary: #a3a3a3;
+      --text-muted: #737373;
+      --border: hsla(0,0%,100%,0.08);
+      --border-light: hsla(0,0%,100%,0.12);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #faf8f5; color: #2c2c2e; line-height: 1.6;
+      font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      background:var(--bg); color:var(--text-secondary); line-height:1.6;
+      -webkit-font-smoothing:antialiased;
     }
-    .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
-    header {
-      padding: 24px 0; display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid #eeeae5;
+    .container { max-width:800px; margin:0 auto; padding:0 24px; }
+
+    header.navbar {
+      padding:1.25rem 0; position:sticky; top:0;
+      background:var(--bg); border-bottom:1px solid var(--border); z-index:100;
     }
-    header h1 { font-size: 18px; font-weight: 700; color: #8b6f4e; letter-spacing: -0.3px; }
-    header h1 a { color: #8b6f4e; text-decoration: none; }
-    header nav a {
-      color: #8a8a8e; margin-left: 24px; text-decoration: none; font-size: 14px; font-weight: 500;
+    .nav-container {
+      max-width:1200px; margin:0 auto; padding:0 2rem;
+      display:flex; justify-content:space-between; align-items:center;
     }
-    header nav a:hover { color: #5c3d2e; }
-    header nav a.active { color: #5c3d2e; }
-    .page { padding: 60px 0 80px; }
-    .page h2 { font-size: 36px; color: #1a1a1c; margin-bottom: 12px; letter-spacing: -1px; }
-    .page h3 { font-size: 22px; color: #1a1a1c; margin: 36px 0 12px; }
-    .page p { color: #6a6a6e; margin-bottom: 16px; font-size: 16px; }
-    .page .lead { font-size: 18px; color: #4a4a4e; margin-bottom: 32px; }
-    .values { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin: 32px 0; }
+    .logo {
+      font-weight:600; font-size:1.25rem; color:var(--text-primary);
+      display:flex; align-items:center; gap:0.5rem; text-decoration:none;
+    }
+    .logo .icon { color:var(--text-primary); }
+    .nav-right { display:flex; align-items:center; gap:2rem; }
+    .nav-link {
+      color:var(--text-secondary); text-decoration:none;
+      font-weight:400; font-size:0.9rem; transition:color 0.2s;
+    }
+    .nav-link:hover, .nav-link.active { color:var(--text-primary); }
+
+    .page { padding:80px 0; }
+    .page h2 {
+      font-family:'Geist','Inter',sans-serif;
+      font-size:clamp(2.2rem,4vw,3rem); font-weight:600;
+      letter-spacing:-0.03em; color:var(--text-primary); margin-bottom:16px;
+    }
+    .page .lead {
+      font-size:1.15rem; color:var(--text-secondary); margin-bottom:48px;
+      max-width:650px;
+    }
+    .page h3 {
+      font-family:'Geist','Inter',sans-serif;
+      font-size:1.5rem; font-weight:500;
+      color:var(--text-primary); margin:48px 0 16px; letter-spacing:-0.02em;
+    }
+    .page p { color:var(--text-secondary); margin-bottom:16px; font-size:1rem; }
+    .page code {
+      font-family:'JetBrains Mono',monospace; font-size:0.9rem;
+      background:var(--surface); padding:2px 8px; border-radius:4px;
+      border:1px solid var(--border);
+    }
+
+    .values {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:20px; margin:32px 0;
+    }
     .value-card {
-      background: #fff; border: 1px solid #ede8e3; border-radius: 12px; padding: 24px;
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:12px; padding:24px; transition:border-color 0.2s;
     }
-    .value-card .icon { font-size: 28px; margin-bottom: 8px; display: block; }
-    .value-card h4 { font-size: 15px; color: #1a1a1c; margin-bottom: 6px; }
-    .value-card p { font-size: 13px; color: #8a8a8e; margin-bottom: 0; }
+    .value-card:hover { border-color:var(--border-light); }
+    .value-card .icon { font-size:28px; margin-bottom:8px; display:block; }
+    .value-card h4 { font-size:15px; color:var(--text-primary); margin-bottom:6px; font-weight:500; }
+    .value-card p { font-size:13px; color:var(--text-muted); margin-bottom:0; }
+
     .btn {
-      display: inline-block; background: #8b6f4e; color: #fff;
-      padding: 12px 28px; border-radius: 10px; text-decoration: none;
-      font-weight: 600; font-size: 14px; transition: background 0.15s;
+      display:inline-block; padding:12px 28px; border-radius:10px;
+      font-weight:500; font-size:14px; text-decoration:none;
+      transition:all 0.2s; border:none; cursor:pointer;
     }
-    .btn:hover { background: #7a5f42; }
-    footer { padding: 32px 0; text-align: center; font-size: 13px; color: #b8b8be; border-top: 1px solid #eeeae5; }
-    @media (max-width: 640px) {
-      .page h2 { font-size: 28px; }
-      header nav a { margin-left: 16px; font-size: 13px; }
+    .btn-primary {
+      background:#5e8268; color:#fff;
+    }
+    .btn-primary:hover { opacity:0.9; }
+
+    footer {
+      padding:32px 0; text-align:center; font-size:13px;
+      color:var(--text-muted); border-top:1px solid var(--border);
+    }
+
+    .section-divider { border:none; border-top:1px solid var(--border); margin:0; }
+    .text-center { text-align:center; }
+
+    @media (max-width:640px) {
+      .page h2 { font-size:28px; }
+      .nav-right { gap:1rem; }
+      header nav a { font-size:13px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1><a href="/">groundkeeps</a></h1>
-      <nav>
-        <a href="/about.html">About</a>
-        <a href="/pricing.html">Pricing</a>
-        <a href="/features.html">Features</a>
-        <a href="/blog.html">Blog</a>
-      </nav>
-    </header>
-  </div>
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="logo">
+        <svg width="24" height="24" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" class="icon">
+          <path d="M 75 25 A 35 35 0 1 0 75 75" />
+          <path d="M 45 50 L 75 50" />
+          <path d="M 60 50 L 75 65" />
+        </svg>
+        GroundKeeps
+      </a>
+      <div class="nav-right">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/about.html" class="nav-link active">About</a>
+        <a href="/features.html" class="nav-link">Features</a>
+        <a href="/pricing.html" class="nav-link">Pricing</a>
+      </div>
+    </div>
+  </header>
 
   <section class="page">
     <div class="container">
-      <h2>About groundkeeps</h2>
+      <h2>About GroundKeeps</h2>
       <p class="lead">Building the trust infrastructure for enterprise AI — one verified response at a time.</p>
 
       <h3>Our Mission</h3>
       <p>Every day, businesses deploy AI agents that make decisions, answer customers, and execute actions. But how do you know when an LLM is hallucinating? How do you ensure an agent only does what it's allowed to? How do you prove compliance after the fact?</p>
-      <p>groundkeeps is open-source middleware that sits between your application and any LLM, verifying every output against your data and enforcing policies on every action. Born out of the reality that embedding-based hallucination detection has a near-100% false positive rate, we built a reasoning-based approach that actually works.</p>
+      <p>GroundKeeps is open-source middleware that sits between your application and any LLM, verifying every output against your data and enforcing policies on every action. Born out of the reality that embedding-based hallucination detection has a near-100% false positive rate, we built a reasoning-based approach that actually works.</p>
 
       <h3>Our Values</h3>
       <div class="values">
@@ -96,15 +160,18 @@
       </div>
 
       <h3>Our Story</h3>
-      <p>groundkeeps started with a simple observation: enterprises were adopting LLMs faster than they could build guardrails. The existing solutions were either SaaS-only (data leaves your network), used unreliable embedding methods (high false positives), or were too complex to integrate.</p>
+      <p>GroundKeeps started with a simple observation: enterprises were adopting LLMs faster than they could build guardrails. The existing solutions were either SaaS-only (data leaves your network), used unreliable embedding methods (high false positives), or were too complex to integrate.</p>
       <p>We built a drop-in proxy that adds grounding, guardrails, and auditing to any LLM — installable in under 5 minutes with a single <code>docker compose up</code>. No API keys to buy, no data to share, no vendor lock-in.</p>
 
-      
+      <div class="text-center" style="margin-top:60px">
+        <a href="https://github.com/Manasverma-code/GroundKeeps" target="_blank" class="btn btn-primary">View on GitHub →</a>
+      </div>
     </div>
   </section>
 
+  <hr class="section-divider">
   <footer>
-    <p>groundkeeps.in — Open-source trust layer for enterprise AI.</p>
+    <p>GroundKeeps.in — Open-source trust layer for enterprise AI.</p>
   </footer>
 </body>
 </html>
