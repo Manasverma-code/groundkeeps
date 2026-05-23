@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing — groundkeeps</title>
+  <meta name="description" content="groundkeeps pricing — free self-hosted open-source or enterprise managed." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #faf8f5; color: #2c2c2e; line-height: 1.6;
+    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+    header {
+      padding: 24px 0; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid #eeeae5;
+    }
+    header h1 { font-size: 18px; font-weight: 700; color: #8b6f4e; letter-spacing: -0.3px; }
+    header h1 a { color: #8b6f4e; text-decoration: none; }
+    header nav a {
+      color: #8a8a8e; margin-left: 24px; text-decoration: none; font-size: 14px; font-weight: 500;
+    }
+    header nav a:hover { color: #5c3d2e; }
+    header nav a.active { color: #5c3d2e; }
+    .page { padding: 60px 0 80px; }
+    .page h2 { font-size: 36px; color: #1a1a1c; text-align: center; margin-bottom: 8px; letter-spacing: -1px; }
+    .page .subtitle { text-align: center; color: #6a6a6e; font-size: 16px; margin-bottom: 48px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; align-items: start; }
+    .plan {
+      background: #fff; border: 1px solid #ede8e3; border-radius: 16px; padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: box-shadow 0.2s;
+    }
+    .plan:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .plan.featured {
+      border-color: #c4a882; box-shadow: 0 0 0 2px #c4a882, 0 8px 24px rgba(0,0,0,0.08);
+      transform: scale(1.02); position: relative;
+    }
+    .plan .badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: #8b6f4e; color: #fff; padding: 4px 16px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+    }
+    .plan h3 { font-size: 20px; color: #1a1a1c; margin-bottom: 4px; }
+    .plan .price { font-size: 40px; font-weight: 800; color: #1a1a1c; margin: 16px 0; }
+    .plan .price span { font-size: 16px; font-weight: 400; color: #8a8a8e; }
+    .price-dual { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .price-option { display: flex; flex-direction: column; align-items: center; line-height: 1.2; }
+    .price-option .currency { font-size: 32px; font-weight: 800; color: #1a1a1c; }
+    .price-option .price-label { font-size: 11px; font-weight: 500; color: #8a8a8e; text-transform: uppercase; letter-spacing: 0.5px; }
+    .price-or { font-size: 12px; color: #b0b0b4; font-weight: 500; }
+    .plan p { color: #6a6a6e; font-size: 14px; margin-bottom: 20px; }
+    .plan ul { list-style: none; padding: 0; margin: 0 0 24px; }
+    .plan ul li { padding: 6px 0; font-size: 14px; color: #4a4a4e; }
+    .plan ul li::before { content: "✓ "; color: #7a9e7e; font-weight: 700; }
+    .btn-group { display: flex; gap: 8px; }
+    .btn-group .btn { flex: 1; }
+    .btn {
+      display: block; text-align: center; background: #8b6f4e; color: #fff;
+      padding: 12px 24px; border-radius: 10px; text-decoration: none;
+      font-weight: 600; font-size: 14px; transition: background 0.15s;
+    }
+    .btn-sm { padding: 10px 12px; font-size: 13px; }
+    .btn:hover { background: #7a5f42; }
+    .btn-outline {
+      background: transparent; border: 1px solid #d4cdc6; color: #4a4a4e;
+    }
+    .btn-outline:hover { background: #f8f6f3; border-color: #c4a882; }
+    .faq { margin-top: 60px; }
+    .faq h3 { font-size: 24px; text-align: center; margin-bottom: 24px; }
+    .faq-item { margin-bottom: 20px; }
+    .faq-item h4 { font-size: 16px; color: #1a1a1c; margin-bottom: 4px; }
+    .faq-item p { font-size: 14px; color: #6a6a6e; }
+    footer { padding: 32px 0; text-align: center; font-size: 13px; color: #b8b8be; border-top: 1px solid #eeeae5; }
+    @media (max-width: 640px) {
+      .page h2 { font-size: 28px; }
+      header nav a { margin-left: 16px; font-size: 13px; }
+      .plan.featured { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><a href="/">groundkeeps</a></h1>
+      <nav>
+        <a href="/about.html">About</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/features.html">Features</a>
+
+      </nav>
+    </header>
+  </div>
+
+  <section class="page">
+    <div class="container">
+      <h2>Simple Pricing</h2>
+      <p class="subtitle">Start free. Scale when you need to.</p>
+
+      <div class="pricing-grid">
+        <div class="plan">
+          <h3>Self-Hosted</h3>
+          <div class="price">Free</div>
+          <p>Open-source with rate limits. Run on your own infrastructure.</p>
+          <ul>
+            <li>Full grounding &amp; guard engine</li>
+            <li>Audit store with SHA-256 chains</li>
+            <li>React dashboard</li>
+            <li><strong>5,000</strong> verifications / month</li>
+            <li><strong>2</strong> agents</li>
+            <li><strong>15-day</strong> audit retention</li>
+            <li>Community support (GitHub)</li>
+          </ul>
+          <a class="btn" href="https://github.com/Manasverma-code/groundkeeps">Self-Host Now →</a>
+        </div>
+
+        <div class="plan featured">
+          <span class="badge">POPULAR</span>
+          <h3>Self-Hosted Pro</h3>
+          <div class="price price-dual">
+            <span class="price-option">
+              <span class="currency">$99</span>
+              <span class="price-label">International</span>
+            </span>
+            <span class="price-or">or</span>
+            <span class="price-option">
+              <span class="currency">₹8,499</span>
+              <span class="price-label">India</span>
+            </span>
+          </div>
+          <p>Unlimited self-hosted for production use. Same infra, no caps.</p>
+          <ul>
+            <li>Unlimited verifications</li>
+            <li>Unlimited agents</li>
+            <li>1-year audit retention</li>
+            <li>Priority GitHub issues</li>
+            <li>License key (offline-capable)</li>
+            <li>Email support</li>
+          </ul>
+          <div class="btn-group">
+            <a class="btn btn-sm" href="PAYMENT_LINK_99">Buy $99/mo →</a>
+            <a class="btn btn-sm" href="https://rzp.io/rzp/UkBhJufz">Buy ₹8,499/mo →</a>
+          </div>
+        </div>
+
+
+        <div class="plan">
+          <h3>Enterprise</h3>
+          <div class="price">Custom</div>
+          <p>On-prem deployment, SSO, compliance, and dedicated support.</p>
+          <ul>
+            <li>Everything in Self-Hosted Pro</li>
+            <li>On-prem / air-gapped deployment</li>
+            <li>SAML / SSO integration</li>
+            <li>SOC 2 evidence reports</li>
+            <li>Fine-tuned verification models</li>
+            <li>Dedicated support engineer</li>
+          </ul>
+          <a class="btn btn-outline" href="mailto:hello@groundkeeps.in?subject=Enterprise%20Inquiry">Contact Us →</a>
+        </div>
+      </div>
+
+      <div class="faq">
+        <h3>Frequently Asked Questions</h3>
+        <div class="faq-item">
+          <h4>What are the limits on the free self-hosted version?</h4>
+          <p>5,000 verifications per month, 2 agents, and 15-day audit retention. Upgrade to Self-Hosted Pro for unlimited everything.</p>
+        </div>
+        <div class="faq-item">
+          <h4>How do you enforce limits on self-hosted?</h4>
+          <p>The proxy periodically checks a local usage counter against the license key. Free tier runs fully offline — Pro tier needs occasional online validation but works offline for 30 days.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Does Self-Hosted Pro require an internet connection?</h4>
+          <p>It needs occasional online license validation — once every 30 days. The free tier runs fully offline.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Can I get a trial of Self-Hosted Pro?</h4>
+          <p>The free tier already gives you full access with rate limits. Upgrade anytime — no commitments.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>groundkeeps.in — Open-source trust layer for enterprise AI.</p>
+  </footer>
+</body>
+</html>
