@@ -1,253 +1,263 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ground-Keeps — Trust Layer for Enterprise AI</title>
-  <meta name="description" content="Open-source middleware that verifies every LLM output against real data and ensures every agent action stays within policy." />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #faf8f5;
-      color: #2c2c2e;
-      line-height: 1.6;
-    }
-    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
-
-    header {
-      padding: 24px 0;
-      display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid #eeeae5;
-    }
-    header h1 { font-size: 18px; font-weight: 700; color: #8b6f4e; letter-spacing: -0.3px; }
-    header nav a {
-      color: #8a8a8e; margin-left: 24px; text-decoration: none; font-size: 14px; font-weight: 500;
-    }
-    header nav a:hover { color: #5c3d2e; }
-
-    .hero {
-      padding: 100px 0 80px;
-      text-align: center;
-    }
-    .hero h2 {
-      font-size: 52px; font-weight: 800; color: #1a1a1c; margin-bottom: 20px;
-      letter-spacing: -1.5px; line-height: 1.15;
-    }
-    .hero h2 span { color: #8b6f4e; }
-    .hero p {
-      font-size: 18px; color: #6a6a6e; max-width: 600px; margin: 0 auto 40px;
-    }
-    .hero .code-block {
-      background: #ffffff; border: 1px solid #ede8e3; border-radius: 12px;
-      padding: 20px 24px; text-align: left; font-family: 'JetBrains Mono', monospace;
-      font-size: 13px; color: #6b5a4a; max-width: 520px; margin: 0 auto 36px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.04); line-height: 1.8;
-    }
-    .hero .code-block .prompt { color: #b8b8be; }
-    .hero .code-block .output { color: #7a9e7e; }
-    .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .btn {
-      display: inline-block; background: #8b6f4e; color: #fff;
-      padding: 14px 32px; border-radius: 10px; text-decoration: none;
-      font-weight: 600; font-size: 15px; transition: background 0.15s;
-    }
-    .btn:hover { background: #7a5f42; }
-    .btn-outline {
-      background: transparent; border: 1px solid #d4cdc6; color: #4a4a4e;
-    }
-    .btn-outline:hover { background: #f8f6f3; border-color: #c4a882; }
-
-    .logos { padding: 40px 0 60px; text-align: center; border-top: 1px solid #eeeae5; }
-    .logos p { font-size: 12px; color: #b8b8be; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
-    .logo-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
-    .logo-grid span { font-size: 14px; color: #8a8a8e; font-weight: 500; }
-
-    .features { padding: 80px 0; }
-    .features h3 { font-size: 28px; color: #1a1a1c; text-align: center; margin-bottom: 16px; letter-spacing: -0.5px; }
-    .features > .container > p { text-align: center; color: #6a6a6e; margin-bottom: 48px; font-size: 16px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-    .card {
-      background: #ffffff; border: 1px solid #ede8e3; border-radius: 12px;
-      padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: box-shadow 0.2s;
-    }
-    .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
-    .card .icon { font-size: 24px; margin-bottom: 12px; display: block; }
-    .card h4 { font-size: 16px; color: #1a1a1c; margin-bottom: 8px; }
-    .card p { font-size: 14px; color: #6a6a6e; line-height: 1.7; }
-
-    .arch { padding: 60px 0; border-top: 1px solid #eeeae5; }
-    .arch h3 { font-size: 28px; color: #1a1a1c; text-align: center; margin-bottom: 40px; letter-spacing: -0.5px; }
-    .arch .flow { max-width: 600px; margin: 0 auto; }
-    .arch .flow pre {
-      background: #ffffff; border: 1px solid #ede8e3; border-radius: 12px;
-      padding: 24px; font-size: 13px; line-height: 2; color: #6b5a4a;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04); overflow-x: auto;
-    }
-    .arch .flow pre .hl { color: #8b6f4e; font-weight: 600; }
-    .arch .flow pre .arrow { color: #c4a882; }
-
-    .cta {
-      padding: 80px 0; text-align: center;
-      background: #ffffff; border-top: 1px solid #eeeae5;
-    }
-    .cta h3 { font-size: 28px; color: #1a1a1c; margin-bottom: 12px; letter-spacing: -0.5px; }
-    .cta p { color: #6a6a6e; margin-bottom: 28px; }
-
-    .stack-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: #f5f1ec; border: 1px solid #ede8e3; border-radius: 6px;
-      padding: 4px 12px; font-size: 12px; color: #8a8a8e;
-    }
-
-    footer { padding: 32px 0; text-align: center; font-size: 13px; color: #b8b8be; }
-
-    .domain-badge {
-      margin-top: 16px; font-size: 13px; color: #7a9e7e;
-    }
-
-    @media (max-width: 640px) {
-      .hero h2 { font-size: 32px; }
-      header nav a { margin-left: 16px; font-size: 13px; }
-      .hero { padding: 60px 0 40px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>groundkeeps</h1>
-      <nav>
-        <a href="/about.html">About</a>
-        <a href="/pricing.html">Pricing</a>
-        <a href="/features.html">Features</a>
-        <a href="/blog.html">Blog</a>
-      </nav>
-    </header>
-  </div>
-
-  <section class="hero">
-    <div class="container">
-      <h2>AI That You Can <span>Trust</span></h2>
-      <p>Open-source middleware that verifies every LLM output against real data and ensures every agent action stays within policy.</p>
-      <div class="code-block">
-        <span class="prompt">$</span> docker compose up --build<br>
-        <span class="prompt">$</span> curl http://localhost:3000/health<br>
-        <span class="output">→ {"status":"ok","service":"trust-proxy"}</span>
-      </div>
-      <div class="btn-group">
-        <a class="btn" href="https://github.com/Manasverma-code/groundkeeps/blob/main/docs/INTEGRATION.md">Get Started →</a>
-      </div>
-      <div class="domain-badge">groundkeeps.in — built in India</div>
-    </div>
-  </section>
-
-  <section class="logos">
-    <div class="container">
-      <p>Works With</p>
-      <div class="logo-grid">
-        <span>OpenAI</span>
-        <span>Anthropic</span>
-        <span>Google Gemini</span>
-        <span>Groq</span>
-        <span>Ollama</span>
-        <span>DeepSeek</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="features" id="features">
-    <div class="container">
-      <h3>Two Engines, One API</h3>
-      <p>Drop-in middleware for any LLM application. Five-minute integration.</p>
-      <div class="grid">
-        <div class="card">
-          <span class="icon">🔍</span>
-          <h4>Grounding Engine</h4>
-          <p>Real-time hallucination detection using reasoning-based verification — not embeddings. Extracts claims, cross-references sources, ranks by freshness and authority.</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Ground Keeps: The Trust Layer for Enterprise AI. Open-source middleware that verifies every LLM output against real data." />
+    <title>Ground Keeps — Trust Layer for Enterprise AI</title>
+    <!-- Google Fonts for Eden.so aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script type="module" crossorigin src="/assets/index-Djhr27W3.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Da4P4kFb.css">
+  </head>
+  <body>
+    <div id="app">
+      <!-- Navbar -->
+      <header class="navbar fade-in">
+        <div class="nav-container">
+          <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" class="icon">
+              <path d="M 75 25 A 35 35 0 1 0 75 75" />
+              <path d="M 45 50 L 75 50" />
+              <path d="M 60 50 L 75 65" />
+            </svg>
+            Ground Keeps
+          </div>
+          <div class="nav-right">
+            <a href="#platform" class="nav-link">Platform</a>
+            <a href="#engines" class="nav-link">Engines</a>
+            <a href="#governance" class="nav-link">Governance</a>
+            <a href="#" class="nav-link">Sign in</a>
+            <a href="#pricing" class="btn btn-primary btn-sm btn-pill">Start free</a>
+          </div>
         </div>
-        <div class="card">
-          <span class="icon">🛡️</span>
-          <h4>Guard Engine</h4>
-          <p>JWT-based agent identity with scoped credentials. Declarative allow/deny policies using glob patterns. Real-time action verification before execution.</p>
-        </div>
-        <div class="card">
-          <span class="icon">📋</span>
-          <h4>Audit Store</h4>
-          <p>Append-only WAL-based log with SHA-256 hash chain verification. Detect tampering instantly. Built for EU AI Act, HIPAA, and SOC 2 compliance.</p>
-        </div>
-        <div class="card">
-          <span class="icon">📊</span>
-          <h4>React Dashboard</h4>
-          <p>Real-time metrics, searchable audit log, agent and policy management. Monitor hallucination rates, blocked actions, and compliance status.</p>
-        </div>
-        <div class="card">
-          <span class="icon">🔌</span>
-          <h4>Provider Agnostic</h4>
-          <p>Swap between OpenAI, Anthropic, Gemini, Groq, Ollama, and more via environment variables. Zero code changes. Supports cloud and local models.</p>
-        </div>
-        <div class="card">
-          <span class="icon">🐳</span>
-          <h4>One-Command Deploy</h4>
-          <p>Docker Compose starts the entire stack in seconds. PowerShell and Bash launch scripts with automatic demo data seeding.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+      </header>
 
-  <section class="arch">
-    <div class="container">
-      <h3>Architecture</h3>
-      <div class="flow">
-        <pre>
-<span class="hl">Your App</span> → <span class="hl">Trust Proxy</span> → <span class="hl">LLM Provider</span>
-                │
-           ┌────┴────┐
-        <span class="hl">Grounding</span>   <span class="hl">Guard</span>
-        <span class="hl">Engine</span>     <span class="hl">Engine</span>
-           └────┬────┘
-             <span class="hl">Audit Store</span>
+      <!-- Hero Section -->
+      <section class="hero fade-in">
+        <div class="container text-center">
+          <div class="hero-badge-wrapper">
+            <div class="hero-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:text-bottom; margin-right:4px;"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg> NEW: CHAT WITH ANY LLM PROVIDER</div>
+          </div>
+          
+          <h2>The best way to secure your <br/> LLM apps, verify outputs, <br/> and <span>deploy enterprise AI.</span></h2>
+          
+          <p class="subtitle">
+            Proxy <span class="text-white font-medium">any application</span>, to <span class="text-white font-medium">any provider</span>. Verify across <span class="text-white font-medium">multiple agents</span>. Get reliability <span class="text-white font-medium">in your stack, in one click</span>.
+          </p>
+          
+          <div class="btn-group hero-btns">
+            <a href="#pricing" class="btn btn-primary btn-pill">Get started free &rarr;</a>
+            <a href="https://github.com/trust-layer/opencode" target="_blank" class="btn btn-dark btn-pill">▶ Watch demo</a>
+          </div>
+          <p class="hero-subtext">Free for internal testing. No card required.</p>
 
-  <span class="arrow">→</span> Claim extraction     <span class="arrow">→</span> JWT agent identity
-  <span class="arrow">→</span> Source verification   <span class="arrow">→</span> Allow/deny policies
-  <span class="arrow">→</span> Conflict resolution   <span class="arrow">→</span> Real-time evaluation
-  <span class="arrow">→</span> Temporal checks      <span class="arrow">→</span> SHA-256 audit chain</pre>
-      </div>
-    </div>
-  </section>
+          <!-- Code Block (Eden style UI mockup placement) -->
+          <div class="code-block-wrapper mt-24">
+            <div class="code-block glass-card">
+              <div class="code-header">
+                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              </div>
+              <pre><code><span class="prompt">~</span> curl -X POST https://proxy.groundkeeps.in/v1/chat/verify \
+  -H "Authorization: Bearer gk_live_jwt..." \
+  -d '{
+    "messages": [...],
+    "sources": [...]
+  }'
 
-  <section class="cta">
-    <div class="container">
-      <h3>Ready to deploy?</h3>
-      <p>Open-source. MIT-licensed. Runs anywhere Docker does.</p>
-      <div class="btn-group">
-        <a class="btn" href="https://github.com/Manasverma-code/groundkeeps/blob/main/docs/INTEGRATION.md">Read the Docs →</a>
-      </div>
-    </div>
-  </section>
+<span class="comment">// Response</span>
+{
+  "status": "success",
+  "hallucination_score": 0.0,
+  "escalation_action": "pass",
+  "audit_hash": "e3b0c442...b855"
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
 
-  <section style="padding:60px 0;text-align:center;background:#fff;border-top:1px solid #eeeae5">
-    <div class="container">
-      <h3 style="font-size:28px;color:#1a1a1c;margin-bottom:12px;letter-spacing:-0.5px">Get Early Access</h3>
-      <p style="color:#6a6a6e;margin-bottom:24px;max-width:480px;margin-left:auto;margin-right:auto">Join the waitlist for our managed cloud. We'll notify you when we launch.</p>
-      <form action="https://formspree.io/f/mgoqwqqn" method="POST" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;max-width:440px;margin:0 auto">
-        <input type="email" name="email" placeholder="you@company.com" required
-          style="flex:1;min-width:200px;padding:12px 16px;border:1px solid #d4cdc6;border-radius:10px;font-size:14px;background:#faf8f5;outline:none">
-        <button type="submit" class="btn" style="border:none;cursor:pointer;padding:12px 24px">Join Waitlist →</button>
-      </form>
-      <p style="font-size:12px;color:#b8b8be;margin-top:12px">No spam. Unsubscribe anytime.</p>
-    </div>
-  </section>
+      <!-- Architecture Section -->
+      <section id="platform" class="section fade-in">
+        <div class="container">
+          <div class="section-header text-center">
+            <h3>The Middleware Architecture</h3>
+            <p>A seamless proxy integrating Hallucination Detection and Agent Governance.</p>
+          </div>
+          
+          <div class="arch-diagram glass-card">
+            <div class="arch-node">Your App</div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-box">
+              <div class="arch-title">Ground Keeps Trust Proxy</div>
+              <div class="arch-split">
+                <div class="arch-inner grounding">Grounding Engine<br/><span>RAG Reliability</span></div>
+                <div class="arch-inner guard">Guard Engine<br/><span>Agent Governance</span></div>
+              </div>
+              <div class="arch-footer">Audit Store (SHA-256 WAL)</div>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-node provider">LLM Providers (OpenAI, Anthropic, Ollama...)</div>
+          </div>
+        </div>
+      </section>
 
-  <footer>
-    <div style="display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:8px;flex-wrap:wrap">
-      <span class="stack-badge">Node.js + TypeScript</span>
-      <span class="stack-badge">Fastify</span>
-      <span class="stack-badge">React + Recharts</span>
-      <span class="stack-badge">Docker</span>
+      <!-- Engines Section -->
+      <section id="engines" class="section fade-in">
+        <div class="container">
+          <div class="section-header text-center">
+            <h3>Three Core Engines</h3>
+          </div>
+
+          <div class="grid">
+            <div class="card glass-card">
+              <span class="card-icon">🧠</span>
+              <h4>Grounding Engine</h4>
+              <p>RAG reliability solved. Uses a reasoning LLM to verify factual claims against sources, bypassing the 100% false-positive rate of embedding-based cosine similarity.</p>
+              <ul class="feature-list">
+                <li>Claim Extraction & Verification</li>
+                <li>Source Ranking (Authority/Freshness)</li>
+                <li>Conflict Resolution</li>
+              </ul>
+            </div>
+
+            <div class="card glass-card">
+              <span class="card-icon">🔐</span>
+              <h4>Guard Engine</h4>
+              <p>Agent identity and governance via HMAC JWT tokens and declarative allow/deny glob policies.</p>
+              <ul class="feature-list">
+                <li>Agent Identity Management</li>
+                <li>Declarative Glob Policies</li>
+                <li>&lt; 0.01ms Verification Latency</li>
+              </ul>
+            </div>
+
+            <div class="card glass-card">
+              <span class="card-icon">🗄️</span>
+              <h4>Audit Store</h4>
+              <p>Tamper-evident log ensuring regulatory compliance (EU AI Act, HIPAA). An append-only SQLite WAL log with a continuous SHA-256 Hash Chain.</p>
+              <ul class="feature-list">
+                <li>SHA-256 Hash Chain Integrity</li>
+                <li>Filterable Queries</li>
+                <li>Pure JS SQLite (Zero native deps)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Governance & Integrations -->
+      <section id="governance" class="section fade-in border-top">
+        <div class="container">
+          <div class="grid-2 align-center">
+            <div class="gov-text">
+              <h3>End-to-End Governance</h3>
+              <p class="gov-subtitle">Protecting your application before and after the LLM call.</p>
+              
+              <div class="gov-item">
+                <h5>Output Governance</h5>
+                <p>Citation checking, regex-based PII scanning, and custom pattern blocking to catch obvious issues before grounding.</p>
+              </div>
+              
+              <div class="gov-item">
+                <h5>Document Governance</h5>
+                <p>Pre-filters source documents by status, effective/expiry dates, supersession rules, and versioning.</p>
+              </div>
+
+              <div class="gov-item">
+                <h5>Escalation Engine</h5>
+                <p>Post-verification actions: Pass, Flag, Block, or Correct (re-prompt LLM to fix the response).</p>
+              </div>
+            </div>
+            
+            <div class="integration-box glass-card">
+              <h4 class="text-center mb-16">8 Supported Providers</h4>
+              <div class="integration-grid">
+                <span>OpenAI</span>
+                <span>Anthropic</span>
+                <span>Google Gemini</span>
+                <span>Groq</span>
+                <span>DeepSeek</span>
+                <span>Together</span>
+                <span>OpenRouter</span>
+                <span>Ollama</span>
+              </div>
+              <p class="text-center mt-2 text-small">Zero vendor lock-in. Switch via a unified API.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pricing -->
+      <section id="pricing" class="section fade-in border-top">
+        <div class="container">
+          <div class="section-header text-center">
+            <h3>Deploy Anywhere</h3>
+          </div>
+
+          <div class="grid-3 pricing-grid">
+            <div class="card glass-card text-center">
+              <h4>Self-Hosted</h4>
+              <div class="price">Free</div>
+              <p>For internal testing.</p>
+              <ul class="pricing-features">
+                <li>Full Engine Access</li>
+                <li>5K verifications / mo</li>
+                <li>15-day audit retention</li>
+              </ul>
+              <a href="#" class="btn btn-dark btn-pill full-width">Deploy Now</a>
+            </div>
+            
+            <div class="card glass-card premium text-center">
+              <div class="badge">Most Popular</div>
+              <h4>Self-Hosted Pro</h4>
+              <div class="price">$99<span>/mo</span></div>
+              <p>For production scale.</p>
+              <ul class="pricing-features">
+                <li>Unlimited verifications</li>
+                <li>1-year audit retention</li>
+                <li>Priority support</li>
+              </ul>
+              <a href="#" class="btn btn-primary btn-pill full-width">Start Free Trial</a>
+            </div>
+
+            <div class="card glass-card text-center">
+              <h4>Enterprise</h4>
+              <div class="price">Custom</div>
+              <p>Regulated environments.</p>
+              <ul class="pricing-features">
+                <li>Air-gapped deployment</li>
+                <li>SSO / SAML integration</li>
+                <li>SOC 2 Evidence</li>
+              </ul>
+              <a href="#" class="btn btn-dark btn-pill full-width">Contact Sales</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="footer border-top fade-in">
+        <div class="container text-center">
+          <div class="footer-logo">
+            <svg width="20" height="20" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" class="icon" style="display:inline-block; vertical-align:text-bottom; margin-right:4px;">
+              <path d="M 75 25 A 35 35 0 1 0 75 75" />
+              <path d="M 45 50 L 75 50" />
+              <path d="M 60 50 L 75 65" />
+            </svg>
+            Ground Keeps
+          </div>
+          <p class="footer-text">Built in India. Trust layer for enterprise AI.</p>
+          <div class="footer-links">
+            <a href="#">Platform</a>
+            <a href="#">About Us</a>
+            <a href="#">GitHub</a>
+          </div>
+          <p class="copyright">&copy; 2026 Ground Keeps. MIT Licensed.</p>
+        </div>
+      </footer>
     </div>
-    <p>groundkeeps.in — Open-source trust layer for enterprise AI.</p>
-  </footer>
-</body>
+  </body>
 </html>
