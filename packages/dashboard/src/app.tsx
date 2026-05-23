@@ -17,22 +17,34 @@ export function App() {
     setApiKey(key);
   };
 
-  if (!apiKey) {
-    return <Login onLogin={handleLogin} />;
-  }
+  const handleLogout = () => {
+    sessionStorage.removeItem('ground_keeps_api_key');
+    setApiKey(null);
+  };
 
   return (
     <BrowserRouter>
-      <Layout onLogout={() => { sessionStorage.removeItem('ground_keeps_api_key'); setApiKey(null); }}>
-        <Routes>
-          <Route path="/login" element={<Navigate to="/" replace />} />
-          <Route path="/" element={<Overview />} />
-          <Route path="/audit" element={<AuditLog />} />
-          <Route path="/monitor" element={<Monitor />} />
-          <Route path="/agents" element={<Agents />} />
-          <Route path="/policies" element={<Policies />} />
-        </Routes>
-      </Layout>
+      <Routes>
+        <Route path="/sign-in" element={
+          apiKey ? <Navigate to="/" replace /> : <Login onLogin={handleLogin} />
+        } />
+        <Route path="/*" element={
+          apiKey ? (
+            <Layout onLogout={handleLogout}>
+              <Routes>
+                <Route path="/login" element={<Navigate to="/" replace />} />
+                <Route path="/" element={<Overview />} />
+                <Route path="/audit" element={<AuditLog />} />
+                <Route path="/monitor" element={<Monitor />} />
+                <Route path="/agents" element={<Agents />} />
+                <Route path="/policies" element={<Policies />} />
+              </Routes>
+            </Layout>
+          ) : (
+            <Navigate to="/sign-in" replace />
+          )
+        } />
+      </Routes>
     </BrowserRouter>
   );
 }
