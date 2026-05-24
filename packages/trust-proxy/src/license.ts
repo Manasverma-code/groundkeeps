@@ -15,7 +15,7 @@ export interface LicensePayload {
   sub?: string;
 }
 
-const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAKqIccsMJOnkopOOkeoDspBpge14yrNLg7FsnJRZiItc=\n-----END PUBLIC KEY-----`;
+const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAKqIccsMJOnkopOOkeoDspBpge14yrNLg7FsnJRZiItc=\n-----END PUBLIC KEY-----;`;
 
 const FREE_LIMITS: LicenseLimits = {
   verifications_per_month: 5000,
