@@ -12,6 +12,7 @@ const NAV_ITEMS = [
 
 export function Layout({ children, onLogout }: { children: ReactNode; onLogout?: () => void }) {
   const [health, setHealth] = useState<'loading' | 'ok' | 'error'>('loading');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const check = async () => {
@@ -27,17 +28,25 @@ export function Layout({ children, onLogout }: { children: ReactNode; onLogout?:
     return () => clearInterval(id);
   }, []);
 
+  const closeSidebar = () => setSidebarOpen(false);
+
   return (
     <div className="layout">
-      <nav className="sidebar">
-        <div className="sidebar-brand">
-          <ShieldIcon />
-          <span>groundkeeps</span>
+      <div className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`} onClick={closeSidebar} />
+      <nav className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <div className="sidebar-brand">
+            <ShieldIcon />
+            <span>groundkeeps</span>
+          </div>
+          <button className="sidebar-close" onClick={closeSidebar} aria-label="Close menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
         </div>
 
         <div className="sidebar-nav">
           {NAV_ITEMS.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end}>
+            <NavLink key={item.to} to={item.to} end={item.end} onClick={closeSidebar}>
               <item.icon />
               <span>{item.label}</span>
             </NavLink>
@@ -61,7 +70,12 @@ export function Layout({ children, onLogout }: { children: ReactNode; onLogout?:
           </div>
         </div>
       </nav>
-      <main className="main">{children}</main>
+      <main className="main">
+        <button className="sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Toggle menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+        {children}
+      </main>
     </div>
   );
 }

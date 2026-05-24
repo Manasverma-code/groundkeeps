@@ -31,6 +31,12 @@
             <a href="https://app.groundkeeps.in/sign-in" class="nav-link">Sign in</a>
             <a href="#pricing" class="btn btn-primary btn-sm btn-pill">Start free</a>
           </div>
+          <button class="nav-toggle" aria-label="Toggle menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12h18M3 6h18M3 18h18"/>
+            </svg>
+          </button>
+          <div class="nav-overlay"></div>
         </div>
       </header>
 
@@ -286,5 +292,11 @@
         </div>
       </footer>
     </div>
+    <script>
+      document.querySelector('.nav-toggle')?.addEventListener('click', () => {
+        document.querySelector('.nav-right')?.classList.toggle('open');
+        document.querySelector('.nav-overlay')?.classList.toggle('open');
+      });
+    </script>
   </body>
 </html>

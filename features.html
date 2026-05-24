@@ -92,9 +92,16 @@
     hr.divider { border:none; border-top:1px solid var(--border); margin:0; }
     footer { padding:32px 0; text-align:center; font-size:13px; color:var(--text-muted); }
 
-    @media (max-width:640px) {
+    .nav-toggle{background:none;border:none;color:var(--text-primary);cursor:pointer;display:none;padding:8px;z-index:300;position:relative}.nav-toggle svg{width:24px;height:24px;display:block}.nav-overlay{display:none}
+    @media (max-width:768px) {
       .page h2 { font-size:28px; }
-      .nav-right { gap:1rem; }
+      .nav-right { gap:1rem; display:none; }
+      .nav-right.open { display:flex; flex-direction:column; position:fixed; top:0; left:0; width:100%; height:100dvh; background:var(--bg); justify-content:center; align-items:center; gap:2rem; z-index:200; }
+      .nav-toggle { display:flex; align-items:center; justify-content:center; }
+      .nav-overlay.open { display:block; position:fixed; top:0; left:0; width:100%; height:100dvh; background:#00000080; z-index:150; }
+      .container { padding:0 16px; }
+      .page { padding:40px 0; }
+      .grid { grid-template-columns:1fr; }
     }
   </style>
 </head>
@@ -114,6 +121,10 @@
         <a href="/about.html" class="nav-link">About</a>
         <a href="/features.html" class="nav-link active">Features</a>
       </div>
+      <button class="nav-toggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <div class="nav-overlay"></div>
     </div>
   </header>
 
@@ -205,6 +216,12 @@
     </div>
   </section>
 
+  <script>
+    document.querySelector('.nav-toggle')?.addEventListener('click', () => {
+      document.querySelector('.nav-right')?.classList.toggle('open');
+      document.querySelector('.nav-overlay')?.classList.toggle('open');
+    });
+  </script>
   <hr class="divider">
   <footer>
     <p>GroundKeeps.in — Open-source trust layer for enterprise AI.</p>

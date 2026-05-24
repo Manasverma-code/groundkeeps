@@ -320,3 +320,74 @@ pre {
   border: 1px solid #ede8e3 !important;
   border-radius: 8px !important;
 }
+
+/* ── Mobile Responsive ─────────────────────────────── */
+.sidebar-toggle {
+  display: none;
+  background: none;
+  border: 1px solid #ede8e3;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  color: #8a8a8e;
+  margin-bottom: 16px;
+  transition: all 0.15s;
+}
+.sidebar-toggle:hover { background: #f8f6f3; color: #5c3d2e; }
+
+.sidebar-overlay { display: none; }
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-close {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #8a8a8e;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.sidebar-close:hover { color: #5c3d2e; background: #faf8f5; }
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    z-index: 300;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay.open {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100dvh;
+    background: rgba(0,0,0,0.3);
+    z-index: 299;
+  }
+  .sidebar-toggle { display: inline-flex; align-items: center; justify-content: center; }
+  .sidebar-close { display: flex; align-items: center; justify-content: center; }
+  .main { padding: 20px 16px; }
+  .header h1 { font-size: 18px; }
+  .cards { grid-template-columns: 1fr; }
+  table { font-size: 12px; }
+  table thead th, table tbody td { padding: 8px 10px; }
+  form .row { grid-template-columns: 1fr; }
+  .chart-box { padding: 16px; }
+  .login-card { padding: 24px; }
+  .toast { right: 16px; bottom: 16px; left: 16px; }
+}
