@@ -1,0 +1,45 @@
+groups:
+  - name: groundkeeps
+    interval: 30s
+    rules:
+      - alert: ProxyDown
+        expr: up{job="groundkeeps-proxy"} == 0
+        for: 1m
+        annotations:
+          summary: "groundkeeps proxy is down"
+          description: "The groundkeeps proxy has been unreachable for more than 1 minute."
+
+      - alert: HighHallucinationRate
+        expr: groundkeeps_hallucination_score_avg > 0.5
+        for: 5m
+        annotations:
+          summary: "High hallucination rate detected"
+          description: "Average hallucination score is {{ $value }} (threshold: 0.5)"
+
+      - alert: HighPolicyViolationRate
+        expr: rate(groundkeeps_policy_violations_total[5m]) > 10
+        for: 2m
+        annotations:
+          summary: "High policy violation rate"
+          description: "Policy violations are above 10 per minute (current: {{ $value }}/min)"
+
+      - alert: HighEscalationBlockRate
+        expr: rate(groundkeeps_escalation_blocks_total[5m]) > 5
+        for: 2m
+        annotations:
+          summary: "High escalation block rate"
+          description: "Escalation blocks are above 5 per minute (current: {{ $value }}/min)"
+
+      - alert: EngineDisabled
+        expr: groundkeeps_engine_status{engine="grounding"} == 0
+        for: 10m
+        annotations:
+          summary: "Grounding engine is disabled"
+          description: "The grounding engine has been disabled for more than 10 minutes."
+
+      - alert: NoAuditEntries
+        expr: groundkeeps_audit_entries_total == 0
+        for: 30m
+        annotations:
+          summary: "No audit entries being created"
+          description: "No audit log entries in the last 30 minutes — proxy may not be processing requests."

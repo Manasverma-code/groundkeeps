@@ -1,0 +1,18 @@
+# groundkeeps License Server — Caddy configuration
+# Auto-provisions HTTPS via Let's Encrypt
+
+{$LICENSE_DOMAIN}:443 {
+    tls {$EMAIL}
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+    }
+
+    reverse_proxy license-server:3001
+}
+
+{$LICENSE_DOMAIN}:80 {
+    redir https://{$LICENSE_DOMAIN}{uri}
+}
