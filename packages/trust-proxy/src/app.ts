@@ -17,6 +17,7 @@ import {
 } from './validation.js';
 import { computeSummary } from './audit-summarizer.js';
 import { type WebhookConfig, sendWebhook } from './webhooks.js';
+import type { LicenseEnforcement } from './license.js';
 
 interface ProxyConfig {
   targetProvider: LLMProvider;
@@ -30,6 +31,7 @@ interface ProxyConfig {
   dashboardDir?: string;
   apiKey?: string;
   webhookConfig?: WebhookConfig;
+  licenseEnforcement?: LicenseEnforcement;
 }
 
 const MAX_RECENT_VERIFICATIONS = 50;
@@ -150,6 +152,11 @@ export async function createApp(config: ProxyConfig) {
     service: 'groundkeeps',
     version: '0.1.0',
     auth: config.apiKey ? 'required' : 'disabled',
+    license: config.licenseEnforcement ? {
+      tier: config.licenseEnforcement.state.tier,
+      expires_at: config.licenseEnforcement.state.expiresAt?.toISOString() ?? null,
+      remaining_verifications: config.licenseEnforcement.tracker.remainingVerifications(config.licenseEnforcement.state.limits.verifications_per_month),
+    } : null,
     engines: {
       grounding: config.groundingEngine ? 'enabled' : 'disabled',
       output_governance: config.outputGovernanceEngine ? 'enabled' : 'disabled',
@@ -169,6 +176,10 @@ export async function createApp(config: ProxyConfig) {
       requests_total: requestCount,
       audit_entries: auditCount,
       version: '0.1.0',
+      license: config.licenseEnforcement ? {
+        tier: config.licenseEnforcement.state.tier,
+        remaining_verifications: config.licenseEnforcement.tracker.remainingVerifications(config.licenseEnforcement.state.limits.verifications_per_month),
+      } : null,
       engines: {
         grounding: config.groundingEngine ? 'enabled' : 'disabled',
         guard: config.guardEngine ? 'enabled' : 'disabled',
@@ -211,6 +222,15 @@ export async function createApp(config: ProxyConfig) {
   // ── Verify ───────────────────────────────────────
   app.post('/v1/verify', async (req, reply) => {
     if (!validateOrReply(VerifyBodySchema, req.body, reply)) return;
+
+    if (config.licenseEnforcement) {
+      const check = config.licenseEnforcement.canVerify();
+      if (!check.allowed) {
+        return reply.code(403).send({ verified: false, error: check.reason, license_tier: config.licenseEnforcement.state.tier });
+      }
+      config.licenseEnforcement.tracker.incrementVerification();
+    }
+
     const { response, sources, action, resource, agent_token, agent_id, governance, output_governance, escalation } = req.body as z.infer<typeof VerifyBodySchema>;
 
     // 1. Document governance (pre-filter sources)
@@ -300,6 +320,15 @@ export async function createApp(config: ProxyConfig) {
   // ── Chat + Verify ─────────────────────────────────
   app.post('/v1/chat/verify', async (req, reply) => {
     if (!validateOrReply(ChatVerifyBodySchema, req.body, reply)) return;
+
+    if (config.licenseEnforcement) {
+      const check = config.licenseEnforcement.canVerify();
+      if (!check.allowed) {
+        return reply.code(403).send({ verified: false, error: check.reason, license_tier: config.licenseEnforcement.state.tier });
+      }
+      config.licenseEnforcement.tracker.incrementVerification();
+    }
+
     const { model, messages, sources, action, resource, agent_token, agent_id, max_tokens, temperature, governance, output_governance, escalation } = req.body as z.infer<typeof ChatVerifyBodySchema>;
 
     // 1. Document governance (pre-filter sources)
@@ -390,6 +419,15 @@ export async function createApp(config: ProxyConfig) {
   app.post('/v1/agents', async (req, reply) => {
     if (!config.guardEngine) return reply.code(501).send({ error: 'Guard engine not configured' });
     if (!validateOrReply(CreateAgentBodySchema, req.body, reply)) return;
+
+    if (config.licenseEnforcement) {
+      const currentCount = config.guardEngine.listAgents().length;
+      const check = config.licenseEnforcement.canCreateAgent(currentCount);
+      if (!check.allowed) {
+        return reply.code(403).send({ error: check.reason, license_tier: config.licenseEnforcement.state.tier });
+      }
+    }
+
     const { name, scope } = req.body as z.infer<typeof CreateAgentBodySchema>;
     return reply.code(201).send(config.guardEngine.registerAgent(name, scope));
   });

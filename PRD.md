@@ -119,3 +119,36 @@ User Query → LLM → [Trust Layer] → Enterprise System
 - **Model dependency**: Detection accuracy tied to underlying verification model quality
 - **Enterprise sales cycle**: 6-12 month procurement in regulated industries
 - **Pricing pressure**: LLM providers may bundle similar features for free
+
+---
+
+## 13. Production Deployment Checklist
+
+### 13.1 VPS Setup (Oracle Free Tier)
+- [ ] SSH into the Oracle VPS
+- [ ] Update system: `sudo apt update && sudo apt upgrade -y`
+- [ ] Install Docker: `curl -fsSL https://get.docker.com | sudo bash`
+- [ ] Install Git: `sudo apt install -y git`
+- [ ] Clone & build: `git clone https://github.com/Manasverma-code/groundkeeps.git /opt/groundkeeps && cd /opt/groundkeeps && npm install && npm run build`
+
+### 13.2 DNS
+- [ ] A record: `license.groundkeeps.in` → `<oracle-vps-ip>`
+- [ ] A record: `api.groundkeeps.in` → `<oracle-vps-ip>` (main proxy)
+
+### 13.3 License Server
+- [ ] Run: `bash scripts/deploy-license-server.sh`
+- [ ] Save the generated **ADMIN_KEY**
+- [ ] Verify: `curl https://license.groundkeeps.in/v1/health`
+
+### 13.4 Razorpay Webhook
+- [ ] Go to Razorpay Dashboard → Settings → Webhooks
+- [ ] URL: `https://license.groundkeeps.in/v1/webhook/razorpay`
+- [ ] Generate secret: `openssl rand -hex 32`
+- [ ] Paste in Razorpay Secret field AND server `.env` as `RAZORPAY_WEBHOOK_SECRET`
+- [ ] Select event: **`payment.captured`**
+- [ ] Alert email: `hello@groundkeeps.in` (or your email)
+
+### 13.5 Main Proxy (if deploying)
+- [ ] Run: `bash scripts/deploy.sh`
+- [ ] Set `LICENSE_SERVER_URL=https://license.groundkeeps.in` in `.env.prod`
+- [ ] Set `LICENSE_KEY` for pro (or leave blank for free)

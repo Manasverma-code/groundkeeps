@@ -7,6 +7,7 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createApp } from './app.js';
 import type { WebhookConfig } from './webhooks.js';
+import { createLicenseEnforcement } from './license.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -61,6 +62,12 @@ export async function startProxy() {
     console.log(`  🔔 Webhook:      ${webhookUrl} (events: ${webhookConfig.events.join(', ')})`);
   }
 
+  const licenseEnforcement = createLicenseEnforcement(
+    process.env['LICENSE_KEY'],
+    process.env['USAGE_DB_PATH'],
+    process.env['LICENSE_SERVER_URL'],
+  );
+
   const app = await createApp({
     targetProvider,
     groundingEngine,
@@ -69,6 +76,7 @@ export async function startProxy() {
     escalationEngine,
     guardEngine,
     auditStore,
+    licenseEnforcement,
     defaultAgentId: process.env['DEFAULT_AGENT_ID'] ?? 'default',
     dashboardDir,
     apiKey,
@@ -77,6 +85,7 @@ export async function startProxy() {
 
   const port = parseInt(process.env['PROXY_PORT'] ?? '3000', 10);
   await app.listen({ port, host: '0.0.0.0' });
+  console.log(`  📋 License Tier: ${licenseEnforcement.state.tier}${licenseEnforcement.state.expiresAt ? ` (expires ${licenseEnforcement.state.expiresAt.toISOString().split('T')[0]})` : ''}`);
   console.log(`\n  🛡️  groundkeeps running on http://localhost:${port}`);
   console.log(`  📡 Target LLM:   ${targetConfig.name} (${targetConfig.defaultModel})`);
   console.log(`  🔍 Verifier LLM: ${verifierConfig.name} (${verifierConfig.defaultModel})`);
