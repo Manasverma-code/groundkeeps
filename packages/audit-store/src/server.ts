@@ -1,9 +1,26 @@
 import Fastify from 'fastify';
+import { timingSafeEqual } from 'node:crypto';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import { AuditStore } from './store.js';
 import type { AuditAppendRequest, AuditQuery } from './store.js';
 
-export function createAuditServer(store: AuditStore) {
+export function createAuditServer(store: AuditStore, apiKey?: string) {
   const app = Fastify({ logger: true });
+
+  function authHook(req: FastifyRequest, reply: FastifyReply) {
+    if (!apiKey) return;
+    if (req.url === '/health') return;
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) {
+      return reply.code(401).send({ error: 'Missing or invalid Authorization header' });
+    }
+    const key = auth.slice(7);
+    if (key.length !== apiKey.length || !timingSafeEqual(Buffer.from(key), Buffer.from(apiKey))) {
+      return reply.code(401).send({ error: 'Invalid API key' });
+    }
+  }
+
+  app.addHook('onRequest', async (req, reply) => authHook(req, reply));
 
   app.get('/health', async () => ({ status: 'ok', service: 'audit-store' }));
 

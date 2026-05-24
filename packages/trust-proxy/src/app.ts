@@ -48,24 +48,22 @@ interface RecentVerification {
   audit_id: string | null;
 }
 
-const PUBLIC_ROUTES = new Set(['/health', '/', '/v1/metrics']);
+const PUBLIC_ROUTES = new Set(['/health', '/']);
 
 function authHook(config: ProxyConfig) {
   return async (req: FastifyRequest, reply: FastifyReply) => {
     if (!config.apiKey) return;
     if (PUBLIC_ROUTES.has(req.url)) return;
     if (req.url.startsWith('/assets/')) return;
-    if (req.url.startsWith('/v1/')) {
-      const auth = req.headers['authorization'];
-      if (!auth || !auth.startsWith('Bearer ')) {
-        req.log.error({ url: req.url, ip: req.ip }, 'Auth failed: missing or malformed Authorization header');
-        return reply.code(401).send({ error: 'Missing or invalid Authorization header. Use: Authorization: Bearer <PROXY_API_KEY>' });
-      }
-      const key = auth.slice(7);
-      if (key.length !== config.apiKey.length || !timingSafeEqual(Buffer.from(key), Buffer.from(config.apiKey))) {
-        req.log.error({ url: req.url, ip: req.ip }, 'Auth failed: invalid API key');
-        return reply.code(401).send({ error: 'Invalid API key' });
-      }
+    const auth = req.headers['authorization'];
+    if (!auth || !auth.startsWith('Bearer ')) {
+      req.log.error({ url: req.url, ip: req.ip }, 'Auth failed: missing or malformed Authorization header');
+      return reply.code(401).send({ error: 'Missing or invalid Authorization header. Use: Authorization: Bearer <PROXY_API_KEY>' });
+    }
+    const key = auth.slice(7);
+    if (key.length !== config.apiKey.length || !timingSafeEqual(Buffer.from(key), Buffer.from(config.apiKey))) {
+      req.log.error({ url: req.url, ip: req.ip }, 'Auth failed: invalid API key');
+      return reply.code(401).send({ error: 'Invalid API key' });
     }
   };
 }

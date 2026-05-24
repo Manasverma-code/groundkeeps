@@ -2,7 +2,7 @@ import Fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { readFileSync } from 'node:fs';
-import { sign } from 'node:crypto';
+import { sign, createHmac, timingSafeEqual } from 'node:crypto';
 import { resolve } from 'node:path';
 import { z } from 'zod';
 import { LicenseStore } from './store.js';
@@ -58,9 +58,20 @@ export async function createLicenseServer(config: {
   adminKey: string;
   stripeSecret?: string;
   razorpaySecret?: string;
+  webhookSecret?: string;
 }) {
   const app = Fastify({ logger: true });
   await app.register(fastifyCors, { origin: true });
+
+  // Capture raw body for webhook signature verification
+  app.addContentTypeParser('application/json', { parseAs: 'string' }, (req, body, done) => {
+    try {
+      (req as unknown as Record<string, unknown>).rawBody = body;
+      done(null, JSON.parse(body));
+    } catch (err) {
+      done(err as Error, undefined);
+    }
+  });
 
   const privateKey = loadPrivateKey();
   const store = new LicenseStore();
@@ -70,6 +81,39 @@ export async function createLicenseServer(config: {
     const auth = request.headers['authorization'];
     if (!auth || !auth.startsWith('Bearer ') || auth.slice(7) !== config.adminKey) {
       return reply.code(401).send({ error: 'Unauthorized' });
+    }
+  }
+
+  function verifyStripeSignature(rawBody: string, sigHeader: string | undefined): boolean {
+    if (!sigHeader || !config.webhookSecret) return false;
+    const parts = sigHeader.split(',');
+    let timestamp = '';
+    let signature = '';
+    for (const part of parts) {
+      const [k, ...v] = part.split('=');
+      if (k === 't') timestamp = v.join('=');
+      if (k === 'v1') signature = v.join('=');
+    }
+    if (!timestamp || !signature) return false;
+    const expected = createHmac('sha256', config.webhookSecret)
+      .update(`${timestamp}.${rawBody}`)
+      .digest('hex');
+    try {
+      return timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+    } catch {
+      return false;
+    }
+  }
+
+  function verifyRazorpaySignature(rawBody: string, sigHeader: string | undefined): boolean {
+    if (!sigHeader || !config.webhookSecret) return false;
+    const expected = createHmac('sha256', config.webhookSecret)
+      .update(rawBody)
+      .digest('hex');
+    try {
+      return timingSafeEqual(Buffer.from(expected), Buffer.from(sigHeader));
+    } catch {
+      return false;
     }
   }
 
@@ -186,6 +230,13 @@ export async function createLicenseServer(config: {
 
   // Stripe webhook
   app.post('/v1/webhook/stripe', async (req, reply) => {
+    const rawBody = (req as unknown as Record<string, unknown>).rawBody as string;
+    const sigHeader = req.headers['stripe-signature'] as string | undefined;
+    if (!verifyStripeSignature(rawBody, sigHeader)) {
+      req.log.warn({ ip: req.ip }, 'Stripe webhook: invalid signature');
+      return reply.code(401).send({ error: 'Invalid signature' });
+    }
+
     const body = req.body as Record<string, unknown>;
     const eventType = body['type'] as string;
 
@@ -219,6 +270,13 @@ export async function createLicenseServer(config: {
 
   // Razorpay webhook
   app.post('/v1/webhook/razorpay', async (req, reply) => {
+    const rawBody = (req as unknown as Record<string, unknown>).rawBody as string;
+    const sigHeader = req.headers['x-razorpay-signature'] as string | undefined;
+    if (!verifyRazorpaySignature(rawBody, sigHeader)) {
+      req.log.warn({ ip: req.ip }, 'Razorpay webhook: invalid signature');
+      return reply.code(401).send({ error: 'Invalid signature' });
+    }
+
     const body = req.body as Record<string, unknown>;
     const event = body['event'] as string;
 

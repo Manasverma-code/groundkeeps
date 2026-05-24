@@ -10,10 +10,10 @@ export function Login({ onLogin }: { onLogin: (key: string) => void }) {
     setError('');
     setLoading(true);
     try {
-      const res = await fetch('/health', {
+      const res = await fetch('/v1/agents', {
         headers: { Authorization: `Bearer ${key}` },
       });
-      if (res.ok) {
+      if (res.ok || res.status === 501) {
         onLogin(key);
       } else {
         setError('Invalid API key');
