@@ -46,4 +46,4 @@ npm test            # Must pass (78 tests)
 
 ## Need Help?
 
-Open an issue or start a discussion on GitHub.
+Open an issue or start a discussion on Github
